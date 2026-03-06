@@ -1,11 +1,159 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Style for the top navigation bar */
+.topnav {
+  position: sticky;
+  top: 0;
+  height: 60px;
+  overflow: hidden;
+  background-color: #333;
+  z-index: 100;
+}
+.topnav a {
+  float: left;
+  color: #ffffff;
+  text-align: center;
+  height: 100%;
+  padding: 0px 16px;
+  text-decoration: none;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+}
+.topnav a:hover {
+  background-color: #ddd;
+  color: black;
+}
+.topnav a.active {
+  background-color: #04AA6D;
+  color: white;
+}
+.topnav .right {
+  float: right;
+}
+.topnav img {
+  height: 28px;
+  width: auto;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+/* Background image at the top of the page */
+.background {
+  height: 2000px;
+  max-height: 100%;
+  background-image: url("../public/img/background.gif");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.4;
+  transition: opacity 0.5s ease;
+  z-index: -1;
+}
+
+/* Greeting message */
+.message {
+  position: absolute;
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+  text-align: center;
+  font-size: 60px;
+  line-height: 1;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Overwrites the default header settings, then changes text size */
+.message h1, .message h2, .message h3 {
+  white-space: nowrap;
+  margin: 0;
+  margin-top: 15px;
+  padding: 0;
+  background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.message h1 {font-size: 1em;}
+.message h2 {font-size: 0.7em;}
+.message h3 {font-size: 0.5em;}
+
+/* Slides text onto the screen when scrolling down */
+.text-slide {
+  position: absolute;
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+  font-size: 50px;
+  top: 95%;
+  left: -60%;
+  transform: translate(-50%, -50%);
+  transform: translateX(-100%);
+  opacity: 0;
+  transition: transform 1s ease-out, opacity 1s ease-out;
+  z-index: 1;
+}
+.text-slide.active {
+  transform: translateX(220%);
+  opacity: 1;
+}
+
+/* Catalogue to display items from the database */
+.catalogue-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+.catalogue {
+  position: absolute;
+  top: 105%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(200px, 1fr));
+  grid-template-rows: repeat(3, auto);
+  gap: 30px;
+  width: 100%;
+  max-width: 800px;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.catalogue.visible {
+  opacity: 1;
+}
+
+.item-card {
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+.item-card img {
+  height: 15em;
+  width: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+.item-card info {
+  padding: 15px;
+  text-align: center;
+}
+.item-name {
+  font-size: 2em;
+  color: black;
+  margin-top: -15px;
+  margin-bottom: -20px;
+}
+.item-price {
+  font-size: 1.5em;
+  margin-bottom: -8px;
+}
+
+
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
