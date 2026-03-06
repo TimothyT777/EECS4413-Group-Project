@@ -119,11 +119,11 @@ body {
   opacity: 0;
   transition: opacity 1s ease-in-out;
 }
-
 .catalogue.visible {
   opacity: 1;
 }
 
+/* Cards to add an item's image, name, and price */
 .item-card {
   background-color: white;
   border: 1px solid black;
@@ -159,3 +159,4 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
