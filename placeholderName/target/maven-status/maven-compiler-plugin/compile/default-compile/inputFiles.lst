@@ -1,2 +1,10 @@
-C:\Eclipse\project-PlaceholderName\placeholderName\src\main\java\com\example\placeholdername\Controller\testController.java
-C:\Eclipse\project-PlaceholderName\placeholderName\src\main\java\com\example\placeholdername\PlaceholderApplication.java
+C:\Eclipse\EECS4413-Group-Project\placeholderName\src\main\java\com\example\placeholdername\controller\testController.java
+C:\Eclipse\EECS4413-Group-Project\placeholderName\src\main\java\com\example\placeholdername\model\Administrator.java
+C:\Eclipse\EECS4413-Group-Project\placeholderName\src\main\java\com\example\placeholdername\model\Customer.java
+C:\Eclipse\EECS4413-Group-Project\placeholderName\src\main\java\com\example\placeholdername\model\Product.java
+C:\Eclipse\EECS4413-Group-Project\placeholderName\src\main\java\com\example\placeholdername\model\Users.java
+C:\Eclipse\EECS4413-Group-Project\placeholderName\src\main\java\com\example\placeholdername\PlaceholderApplication.java
+C:\Eclipse\EECS4413-Group-Project\placeholderName\src\main\java\com\example\placeholdername\repository\ProductRepository.java
+C:\Eclipse\EECS4413-Group-Project\placeholderName\src\main\java\com\example\placeholdername\repository\UserRepository.java
+C:\Eclipse\EECS4413-Group-Project\placeholderName\src\main\java\com\example\placeholdername\service\ProductService.java
+C:\Eclipse\EECS4413-Group-Project\placeholderName\src\main\java\com\example\placeholdername\service\UserService.java
