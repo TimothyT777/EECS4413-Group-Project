@@ -1,5 +1,6 @@
 Manifest-Version: 1.0
-Built-By: tim
-Build-Jdk: 17.0.1
+Build-Jdk-Spec: 21
+Implementation-Title: project-PlaceholderName
+Implementation-Version: 0.0.1-SNAPSHOT
 Created-By: Maven Integration for Eclipse
 
