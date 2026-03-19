@@ -3,6 +3,7 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+
 /* Style for the top navigation bar */
 .topnav {
   position: sticky;
@@ -41,6 +42,7 @@ body {
   margin-right: 8px;
 }
 
+
 /* Background image at the top of the page */
 .background {
   height: 2000px;
@@ -54,6 +56,7 @@ body {
   z-index: -1;
 }
 
+
 /* Greeting message */
 .message {
   position: absolute;
@@ -65,6 +68,7 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
 
 /* Overwrites the default header settings, then changes text size */
 .message h1, .message h2, .message h3 {
@@ -80,6 +84,7 @@ body {
 .message h1 {font-size: 1em;}
 .message h2 {font-size: 0.7em;}
 .message h3 {font-size: 0.5em;}
+
 
 /* Slides text onto the screen when scrolling down */
 .text-slide {
@@ -98,6 +103,7 @@ body {
   transform: translateX(220%);
   opacity: 1;
 }
+
 
 /* Catalogue to display items from the database */
 .catalogue-wrapper {
@@ -123,6 +129,24 @@ body {
   opacity: 1;
 }
 
+
+/* Search bar for the catalogue */
+.search-bar {
+  position: absolute;
+  top: 98%;
+  right: 15%;
+  width: 500px;
+  height: 40px;
+  font-size: 16px;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+.search-bar.visible {
+  opacity: 1;
+}
+
+
 /* Cards to add an item's image, name, and price */
 .item-card {
   background-color: white;
@@ -131,6 +155,10 @@ body {
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
+}
+.item-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
 }
 .item-card img {
   height: 15em;
@@ -152,7 +180,117 @@ body {
   font-size: 1.5em;
   margin-bottom: -8px;
 }
+.item-description {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 20px;
+}
 
+
+/* The modal opens a pop-up when the item is clicked */
+.item-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+.item-content {
+  background: #fff;
+  border-radius: 12px;
+  max-width: 900px;
+  width: 100%;
+  padding: 20px;
+  position: relative;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  text-align: center;
+  overflow-y: auto;
+  max-height: 90vh;
+}
+
+/* Contains the wrapper for the modal to be split left and right */
+.item-modal-inner {
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+/* Left modal contains the image */
+.item-modal-left {
+  flex: 1 1 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+/* Right modal contains all the product info */
+.item-modal-right {
+  flex: 1 1 300px;
+  display: flex;
+  height: 100%;
+  min-height: 300px;
+  padding-bottom: 10px;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.item-modal-right .item-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+.item-modal-right .item-name {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.item-modal-right .item-price {
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+}
+.item-modal-right .item-description {
+  text-align: left;
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 20px;
+}
+.item-image-full {
+  width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+  margin-bottom: 15px;
+}
+.item-modal-right .add-to-cart {
+  align-self: center;
+  background: #007bff;
+  color: white;
+  padding: 12px 25px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.item-modal-right .add-to-cart:hover {
+  background: #0056b3;
+}
+.close-button {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+  transition: color 0.2s;
+}
 
 
 code {
