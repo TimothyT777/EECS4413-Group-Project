@@ -1,49 +1,112 @@
 import '../Styles/HomePage.css';
+import { useState, useEffect } from "react";
+import '../index.css';
 
 function HomePage(){
+	const [searchTerm, setSearchTerm] = useState("");
+	const [selectedItem, setSelectedItem] = useState(null);
+
+	// Used for searching up items and pulling info from the database.
+	const items = [
+			{ name: "Shirt 1", price: 19.99, image: "/img/shirt1.png", description: "Description for shirt ONE here" },
+			{ name: "Shirt 2", price: 23.99, image: "/img/shirt2.png", description: "Description for shirt TWO here" },
+			{ name: "Shirt 3", price: 27.99, image: "/img/shirt3.png", description: "Description for shirt THREE here" },
+			{ name: "Shirt 4", price: 15.99, image: "/img/shirt4.png", description: "The FitnessGram™ Pacer Test is a multistage aerobic capacity test that progressively gets more difficult as it continues. The 20 meter pacer test will begin in 30 seconds. Line up at the start. The running speed starts slowly, but gets faster each minute after you hear this signal. [beep] A single lap should be completed each time you hear this sound. [ding] Remember to run in a straight line, and run as long as possible. The second time you fail to complete a lap before the sound, your test is over. The test will begin on the word start. On your mark, get ready, start." },
+		];
+	const searchedItems = items.filter(
+		(item) => item.name.toLowerCase().includes(searchTerm.toLowerCase())
+	);
+
+	// Handles clicking on catalogue items.
+	const handleItemClick = (item) => setSelectedItem(item);
+	const handleClose = () => setSelectedItem(null);
+
+	useEffect(() => {
+		// Captures the page scroll and causes effects accordingly.
+		const handleScroll = () => {
+			// Measures the current scroll position on the page.
+			const scrollPosition = window.scrollY;
+
+			// Fades the initial greeting background image out while scrolling down.
+			const background = document.querySelector('.background');
+			let newOpacity = 1 - scrollPosition / 500;
+			if (newOpacity < 0) newOpacity = 0;
+			background.style.opacity = newOpacity;
+
+			// Slides in and shows the catalogue and searchbar
+			const scrollText = document.querySelector('.text-slide');
+			const scrollCatalogue = document.querySelector('.catalogue');
+			const searchCatalogue = document.querySelector('.search-bar');
+			if (scrollPosition > 400) {
+				scrollText.classList.add('active');
+				scrollCatalogue.classList.add('visible');
+				searchCatalogue.classList.add('visible');
+			}
+			else {
+				scrollText.classList.remove('active');
+				scrollCatalogue.classList.remove('visible');
+				searchCatalogue.classList.remove('visible');
+			}
+		}
+		window.addEventListener('scroll', handleScroll);
+		return () => window.removeEventListener('scroll', handleScroll);
+	}, []);
+
+	
+	
+	
+
 	return(
 		<div>
-		<div className="background"></div>
-		    <div className="message">
-		      <h1>WELCOME TO A REAL WEBSITE</h1>
-		      <h2>This is not a scam web-site</h2>
-		      <h3>You can tell by the way it is</h3>
-		    </div>
-
-		    <div className="text-slide">Our (Legitimate) Catalogue</div>
-		    <div className="catalogue-wrapper">
-		      <div className="catalogue">
-		        <div className="item-card">
-		          <img src="/img/shirt1.png" class="image"/>
-		          <info>
-		            <p className="item-name">Shirt 1</p>
-		            <p className="item-price">$19.99</p>
-		          </info>
-		        </div>
-		        <div className="item-card">
-		          <img src="/img/shirt2.png" class="image"/>
-		          <info>
-		            <p className="item-name">Shirt 2</p>
-		            <p className="item-price">$23.99</p>
-		          </info>
-		        </div>
-		        <div className="item-card">
-		          <img src="/img/shirt3.png" class="image"/>
-		          <info>
-		            <p className="item-name">Shirt 3</p>
-		            <p className="item-price">$27.99</p>
-		          </info>
-		        </div>
-		        <div className="item-card">
-		          <img src="/img/shirt4.png" class="image"/>
-		          <info>
-		            <p className="item-name">Shirt 4</p>
-		            <p className="item-price">$15.99</p>
-		          </info>
-		        </div>
-		      </div>
-		    </div>
+			<div className="background"></div>
+			<div className="message">
+				<h1>WELCOME TO A REAL WEBSITE</h1>
+				<h2>This is not a scam web-site</h2>
+				<h3>You can tell by the way it is</h3>
 			</div>
+
+			<div className="text-slide">Our (Legitimate) Catalogue</div>
+			<div className="catalogue-wrapper">
+				<input 
+					type='text' 
+					placeholder='Search Items...' 
+					value={searchTerm}
+					onChange={(e) => setSearchTerm(e.target.value)}
+					className='search-bar'
+				/>
+				<div className="catalogue">
+					{searchedItems.map((item, index) => (
+						<div className='item-card' key={index} onClick={() => handleItemClick(item)}>
+						<img src={item.image} class="image"/>
+						<info>
+							<p className="item-name">{item.name}</p>
+							<p className="item-price">${item.price}</p>
+						</info>
+						</div>
+					))}
+					{selectedItem && (
+						<div className='item-modal' onClick={handleClose}>
+							<div className='item-content' onClick={(e) => e.stopPropagation()}>
+								<span className='close-button' onClick={handleClose}>&times;</span>
+								<div className="item-modal-inner">
+									<div className="item-modal-left">
+										<img src={selectedItem.image} className="item-image-full"/>
+									</div>
+									<div className="item-modal-right">
+										<div className="item-modal-content">
+											<p className="item-name">{selectedItem.name}</p>
+											<p className="item-price">${selectedItem.price}</p>
+											<p className="item-description">{selectedItem.description}</p>
+										</div>
+										<button className='add-to-cart'>Add to cart</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					)}
+				</div>
+			</div>
+		</div>
 	);
 }
 
