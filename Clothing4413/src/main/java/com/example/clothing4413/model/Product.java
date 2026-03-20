@@ -27,6 +27,9 @@ public class Product {
     @Column(name = "price", nullable = false)
     private double price;
 
+    @Column(name = "image")
+    private String image;
+
     /**
      * Probably some other product features we need to add
      * Maybe make a class with enum for product categories and add that as a field here
@@ -36,12 +39,16 @@ public class Product {
      * Just add as you go and as you need.
      */
 
-    public Product(String name, String description, double price) {
+    public Product() {}
+
+    public Product(String name, String description, double price, String image) {
         this.name = name;
         this.description = description;
         this.price = price;
+        this.image = image;
 
     }
+    
 
     public Long getProduct_id() {
         return product_id;
@@ -59,12 +66,20 @@ public class Product {
         return price;
     }
 
+    public String getImage(){
+        return image;
+    }
+
     public void setPrice(double price) {
         this.price = price;
     }
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void setImage(String image){
+        this.image = image;
     }
 
 }
