@@ -2,8 +2,10 @@ package com.example.clothing4413.service;
 
 import java.util.List;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.clothing4413.model.Customer;
 import com.example.clothing4413.model.Users;
 import com.example.clothing4413.repository.UserRepository;
 
@@ -13,17 +15,19 @@ import jakarta.transaction.Transactional;
 public class UserService {
 
     private final UserRepository userRepo;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepo) {
+    public UserService(UserRepository userRepo, PasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<Users> getAllUsers() {
         return userRepo.findAll();
     }
 
-    public List<Users> findByEmail(String email) {
-        return userRepo.findByEmail(email);
+    public Users findByEmail(String email) {
+        return userRepo.findByEmail(email).orElse(null);
     }
 
     public List<Users> findByName(String name) {
@@ -33,13 +37,30 @@ public class UserService {
     public boolean userExists(Long id) {
         return userRepo.existsById(id);
     }
-    
+
     @Transactional
-    public void addUser(Users user) {
-        //Maybe in the future we can hash user passwords before saving
-        userRepo.save(user);
+    public Users registerCustomer(String name, String email, String password) {
+        if (userRepo.findByEmail(email).isPresent()) {
+            throw new IllegalArgumentException("Email is already in use.");
+        }
+
+        Customer customer = new Customer(
+                name,
+                email,
+                passwordEncoder.encode(password)
+        );
+
+        return userRepo.save(customer);
     }
 
-    //I think a seperate method needed for adding Administrators.
+    public Users login(String email, String password) {
+        Users user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid email or password."));
 
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new IllegalArgumentException("Invalid email or password.");
+        }
+
+        return user;
+    }
 }
