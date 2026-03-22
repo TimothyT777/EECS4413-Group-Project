@@ -107,7 +107,8 @@ body {
 
 /* Catalogue to display items from the database */
 .catalogue-wrapper {
-  display: flex;
+  display: relative;
+  padding-left: 30%;
   justify-content: center;
   align-items: center;
   width: 100%;
@@ -134,8 +135,8 @@ body {
 .search-bar {
   position: absolute;
   top: 98%;
-  right: 15%;
-  width: 500px;
+  right: 9%;
+  width: 600px;
   height: 40px;
   font-size: 16px;
   z-index: 10;
@@ -145,10 +146,46 @@ body {
 .search-bar.visible {
   opacity: 1;
 }
-
+.search-advanced {
+  position: absolute;
+  top: 105%;
+  right: 9%;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  background: #f9f9f9;
+  height: fit-content;
+  width: 300px;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+.search-advanced.visible {
+  opacity: 1;
+}
+.search-advanced select {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+.price-range {
+  width: 90%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+.price-range input {
+  flex: 1;
+  width: 92%;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
 
 /* Cards to add an item's image, name, and price */
-.item-card {
+.product-card {
   background-color: white;
   border: 1px solid black;
   border-radius: 10px;
@@ -156,31 +193,31 @@ body {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
 }
-.item-card:hover {
+.product-card:hover {
   transform: translateY(-10px);
   box-shadow: 0 6px 15px rgba(0,0,0,0.15);
 }
-.item-card img {
+.product-card img {
   height: 15em;
   width: 100%;
   object-fit: contain;
   object-position: center;
 }
-.item-card info {
+.product-card info {
   padding: 15px;
   text-align: center;
 }
-.item-name {
+.product-name {
   font-size: 2em;
   color: black;
   margin-top: -15px;
   margin-bottom: -20px;
 }
-.item-price {
+.product-price {
   font-size: 1.5em;
   margin-bottom: -8px;
 }
-.item-description {
+.product-description {
   font-size: 1rem;
   color: #555;
   margin-bottom: 20px;
@@ -188,7 +225,7 @@ body {
 
 
 /* The modal opens a pop-up when the item is clicked */
-.item-modal {
+.product-modal {
   position: fixed;
   top: 0;
   left: 0;
@@ -201,74 +238,83 @@ body {
   z-index: 1000;
   padding: 20px;
 }
-.item-content {
+.product-content {
   background: #fff;
   border-radius: 12px;
   max-width: 900px;
   width: 100%;
-  padding: 20px;
+  max-height: 50vh;
+  height: 100%;
+  padding: 25px;
   position: relative;
   box-shadow: 0 6px 20px rgba(0,0,0,0.2);
   text-align: center;
   overflow-y: auto;
-  max-height: 90vh;
 }
 
 /* Contains the wrapper for the modal to be split left and right */
-.item-modal-inner {
+.product-modal-inner {
   display: flex;
   flex-direction: row;
   gap: 30px;
   align-items: flex-start;
-  flex-wrap: wrap;
+  height: 100%;
+  width: 100%;
 }
 /* Left modal contains the image */
-.item-modal-left {
+.product-modal-left {
   flex: 1 1 300px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 /* Right modal contains all the product info */
-.item-modal-right {
+.product-modal-right {
   flex: 1 1 300px;
   display: flex;
+  flex-direction: column;
   height: 100%;
   min-height: 300px;
   padding-bottom: 10px;
-  flex-direction: column;
-  justify-content: space-between;
   align-items: flex-start;
 }
-.item-modal-right .item-modal-content {
+.product-modal-right .product-modal-content {
   display: flex;
   flex-direction: column;
   gap: 10px;
   width: 100%;
 }
-.item-modal-right .item-name {
+.product-modal-right .product-name {
   font-size: 1.8rem;
   font-weight: bold;
-  margin-bottom: 10px;
+  margin-top: 5px;
 }
-.item-modal-right .item-price {
+.product-modal-right .product-price {
   font-size: 1.3rem;
-  margin-bottom: 15px;
 }
-.item-modal-right .item-description {
+.product-modal-right .product-stock {
+  font-size: 1.1rem;
+}
+.product-modal-right .product-stock-amount {
+  font-size: 1.5rem;
+  color: #e53935;
+  font-weight: bold;
+}
+.product-modal-right .product-description {
   text-align: left;
   font-size: 1rem;
   color: #555;
   margin-bottom: 20px;
 }
-.item-image-full {
+.product-image-full {
   width: 100%;
   max-height: 300px;
   object-fit: contain;
   margin-bottom: 15px;
 }
-.item-modal-right .add-to-cart {
+.product-modal-right .add-to-cart {
   align-self: center;
+  margin-top: auto;
   background: #007bff;
   color: white;
   padding: 12px 25px;
@@ -278,7 +324,7 @@ body {
   cursor: pointer;
   transition: background 0.2s;
 }
-.item-modal-right .add-to-cart:hover {
+.product-modal-right .add-to-cart:hover {
   background: #0056b3;
 }
 .close-button {
