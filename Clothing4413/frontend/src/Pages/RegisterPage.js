@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import "../Styles/Auth.css";
 
-function LoginPage() {
+function RegisterPage() {
   const [form, setForm] = useState({
+    name: "",
     email: "",
     password: ""
   });
@@ -20,7 +21,7 @@ function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const response = await fetch("http://localhost:8080/api/auth/login", {
+    const response = await fetch("http://localhost:8080/api/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -31,19 +32,27 @@ function LoginPage() {
     const data = await response.json();
 
     if (response.ok) {
-      setMessage(`Welcome, ${data.name}`);
+      setMessage(`Registered successfully for ${data.email}`);
     } else {
-      setMessage(data.message || "Login failed.");
+      setMessage(data.message || "Registration failed.");
     }
   };
 
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h1>Login</h1>
-        <p className="auth-subtitle">Sign in to your account</p>
+        <h1>Register</h1>
+        <p className="auth-subtitle">Create your account</p>
 
         <form className="auth-form" onSubmit={handleSubmit}>
+          <input
+            type="text"
+            name="name"
+            placeholder="Full name"
+            value={form.name}
+            onChange={handleChange}
+          />
+
           <input
             type="email"
             name="email"
@@ -60,17 +69,17 @@ function LoginPage() {
             onChange={handleChange}
           />
 
-          <button className="auth-btn" type="submit">Login</button>
+          <button className="auth-btn" type="submit">Register</button>
         </form>
 
         {message && <div className="auth-message">{message}</div>}
 
         <div className="auth-footer">
-          Don’t have an account? <Link to="/register">Register</Link>
+          Already have an account? <Link to="/login">Login</Link>
         </div>
       </div>
     </div>
   );
 }
 
-export default LoginPage;
+export default RegisterPage;
