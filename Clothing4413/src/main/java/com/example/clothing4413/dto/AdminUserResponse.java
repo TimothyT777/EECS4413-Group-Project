@@ -1,25 +1,19 @@
 package com.example.clothing4413.dto;
 
-public class AuthResponse {
+public class AdminUserResponse {
 
-    private String message;
     private Long id;
     private String name;
     private String email;
     private String userType;
 
-    public AuthResponse() {}
+    public AdminUserResponse() {}
 
-    public AuthResponse(String message, Long id, String name, String email, String userType) {
-        this.message = message;
+    public AdminUserResponse(Long id, String name, String email, String userType) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.userType = userType;
-    }
-
-    public String getMessage() {
-        return message;
     }
 
     public Long getId() {

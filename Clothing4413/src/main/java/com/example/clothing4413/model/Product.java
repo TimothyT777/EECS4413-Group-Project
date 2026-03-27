@@ -27,20 +27,17 @@ public class Product {
     @Column(name = "price", nullable = false)
     private double price;
 
-    /**
-     * Probably some other product features we need to add
-     * Maybe make a class with enum for product categories and add that as a field here
-     * would help with the filtering feature.
-     * 
-     * idk what else stock maybe?
-     * Just add as you go and as you need.
-     */
+    @Column(name = "quantity", nullable = false)
+    private int quantity;
 
-    public Product(String name, String description, double price) {
+    public Product() {
+    }
+
+    public Product(String name, String description, double price, int quantity) {
         this.name = name;
         this.description = description;
         this.price = price;
-
+        this.quantity = quantity;
     }
 
     public Long getProduct_id() {
@@ -59,12 +56,23 @@ public class Product {
         return price;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void setDescription(String description) {
         this.description = description;
     }
 
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
 }
