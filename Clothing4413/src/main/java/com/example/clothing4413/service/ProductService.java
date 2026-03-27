@@ -24,6 +24,10 @@ public class ProductService {
         return productRepo.findByName(name);
     }
 
+    public Product findProductById(Long id) {
+        return productRepo.findProductById(id);
+    }
+
     public void clear() {
         productRepo.deleteAll();
     }

@@ -27,11 +27,11 @@ The following is required:
     - Browse to Clothing4413
 
 3. **Run the application**
-    - Open PlaceholderApplication.java in src/main/java/com/example/placeholdername
+    - Open Clothing4413Application.java in src/main/java/com/example/clothing4413
     - Run as Java Application
     - Then, open your command line interface (Start menu → Run → cmd)
-    - Browse to the frontend folder using your command line interface (cd ProjectLocation/project-PlaceholderName/placeholderName/frontend)
-    - Start the react server in your command line interface using command: npm start
+    - Browse to the frontend folder using your command line interface (cd PROJECT_LOCATION/Clothing4413/frontend)
+    - Start the react server in your command line interface using command: "npm install" then "npm start"
 
 4. **Access in browser**
     - [http://localhost:3000](http://localhost:3000)
