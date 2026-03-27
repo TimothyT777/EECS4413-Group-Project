@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../Styles/Auth.css";
 
 function LoginPage() {
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
     email: "",
     password: ""
@@ -31,7 +33,9 @@ function LoginPage() {
     const data = await response.json();
 
     if (response.ok) {
+      localStorage.setItem("user", JSON.stringify(data));
       setMessage(`Welcome, ${data.name}`);
+      navigate("/");
     } else {
       setMessage(data.message || "Login failed.");
     }

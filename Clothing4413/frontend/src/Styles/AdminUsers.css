@@ -1,0 +1,87 @@
+.admin-users-page {
+  padding: 40px;
+  background: #f7f7f7;
+  min-height: 100vh;
+}
+
+.admin-users-page h1 {
+  margin-bottom: 8px;
+}
+
+.admin-users-subtitle {
+  margin-bottom: 24px;
+  color: #555;
+}
+
+.admin-users-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.admin-users-list,
+.admin-users-form-card {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.admin-users-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+
+.admin-users-table th,
+.admin-users-table td {
+  border-bottom: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+}
+
+.admin-users-table th {
+  background-color: #f0f0f0;
+}
+
+.admin-users-table button,
+.admin-users-form button {
+  background-color: #04AA6D;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.admin-users-table button:hover,
+.admin-users-form button:hover {
+  opacity: 0.9;
+}
+
+.admin-users-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.admin-users-form input {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.admin-users-message {
+  margin-top: 16px;
+  color: #333;
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .admin-users-layout {
+    grid-template-columns: 1fr;
+  }
+}
