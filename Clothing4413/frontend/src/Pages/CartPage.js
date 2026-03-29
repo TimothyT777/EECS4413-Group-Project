@@ -1,5 +1,6 @@
 import { useState, useEffect} from 'react';
 import { useAuth } from "../Context/AuthContext";
+import { useNavigate } from 'react-router-dom';
 import "../Styles/CartPage.css";
 
 function CartPage() {
@@ -8,6 +9,7 @@ function CartPage() {
     const [loading, setLoading] = useState(true); // Tracks if the items in the cart have beenn fetched
     const [total, setTotal] = useState(0); // Total price of items in the cart
     const [itemCount, setItemCount] = useState(0); //Total number of items in the cart
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (!user) return;
@@ -18,9 +20,9 @@ function CartPage() {
                 });
 
                 const data = await response.json();
-                setCartItems(data.items);
-                setTotal(data.total);
-                setItemCount(data.itemCount);
+                setCartItems(data.items || []);
+                setTotal(data.total || 0);
+                setItemCount(data.itemCount || 0);
             } catch (error) {
                 console.error("Error fetching cart:", error);
             } finally {
@@ -151,7 +153,7 @@ function CartPage() {
                     <h2>Order Summary</h2>
                     <p>Total Items: {itemCount}</p>
                     <p className="cart-total">Total: ${total.toFixed(2)}</p>
-                    <button className="cart-checkout">Proceed to Checkout</button>
+                    <button className="cart-checkout" onClick={() => navigate("/checkout")}>Proceed to Checkout</button>
                 </div>
             </div>
         </div>

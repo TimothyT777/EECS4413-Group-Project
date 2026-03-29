@@ -29,6 +29,7 @@ public class CartResponse {
         this.items = items;
     }
 
+    //Calculates the total cost of all items in the cart, then sends it to frontend as "total" property in the JSON
     @JsonProperty("total")
     public double getTotalPrice() {
         if (items == null) {
@@ -42,6 +43,7 @@ public class CartResponse {
         return Math.round(total * 100.0) / 100.0; // Round to 2 decimal places
     }
 
+    //Caluclates the total number of items in the cart, then sends it to frontend as "itemCount" property in the JSON
     @JsonProperty("itemCount")
     public int getItemCount() {
         if (items == null) {

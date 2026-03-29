@@ -38,8 +38,21 @@ public class CartService {
     //Get cart
     public Cart getCartByCustomerId(Long customerId) {
         Cart cart = cartRepository.findByCustomerId(customerId);
+
+        //This should never be needed because on register a cart is created, but it is a bandaid fix if something goes wrong so the site keeps running
         if (cart == null) {
-            throw new IllegalArgumentException("Cart for customer with id " + customerId + " not found");
+            Users user = userRepository.findUsersById(customerId);
+            if (user == null) {
+                throw new IllegalArgumentException("User not found with id: " + customerId);
+            }
+            if (!(user instanceof Customer)) {
+                throw new IllegalStateException("User is not a customer");
+            }
+
+            Customer customer = (Customer) user;
+            cart = new Cart(customer);
+            cartRepository.saveAndFlush(cart);
+            System.out.println("Created missing cart for customer: " + customerId);
         }
         return cart;
     }

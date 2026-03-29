@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../Context/AuthContext";
 import '../index.css';
 
-function HomePage(){
+function HomePage() {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [selectedProduct, setSelectedProduct] = useState(null);
 	const [selectedBrand, setSelectedBrand] = useState("");
@@ -33,14 +33,14 @@ function HomePage(){
 	const brands = [...new Set(products.map(product => product.brand))];
 	const category = [...new Set(products.map(product => product.category))];
 	const filteredProduct = products.filter((products) => {
-    	const matchedTerm = products.name.toLowerCase().includes(searchTerm.toLowerCase())
-    	const matchedCategory = selectedCategory ? products.category === selectedCategory : true;
-    	const matchedBrand = selectedBrand ? products.brand === selectedBrand : true;
-    	const matchedMinPrice = minPrice !== "" ? products.price >= parseFloat(minPrice) : true;
-    	const matchedMaxPrice = maxPrice !== "" ? products.price <= parseFloat(maxPrice) : true;
-    	return matchedTerm && matchedCategory && matchedBrand && matchedMinPrice && matchedMaxPrice;
+		const matchedTerm = products.name.toLowerCase().includes(searchTerm.toLowerCase())
+		const matchedCategory = selectedCategory ? products.category === selectedCategory : true;
+		const matchedBrand = selectedBrand ? products.brand === selectedBrand : true;
+		const matchedMinPrice = minPrice !== "" ? products.price >= parseFloat(minPrice) : true;
+		const matchedMaxPrice = maxPrice !== "" ? products.price <= parseFloat(maxPrice) : true;
+		return matchedTerm && matchedCategory && matchedBrand && matchedMinPrice && matchedMaxPrice;
 	});
-	
+
 	// Sort by alphabetical or by price.
 	if (sortOrder === "asc") {
 		filteredProduct.sort((a, b) => a.name.localeCompare(b.name));
@@ -51,7 +51,7 @@ function HomePage(){
 	} else if (sortOrder === "price-desc") {
 		filteredProduct.sort((a, b) => b.price - a.price);
 	}
-	
+
 
 	// Handles clicking on catalogue items.
 	const handleItemClick = (products) => setSelectedProduct(products);
@@ -69,10 +69,10 @@ function HomePage(){
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				credentials: "include",
-				body: JSON.stringify({ 
+				body: JSON.stringify({
 					customerId: user.id,
 					productId: product.product_id,
-					quantity: 1 
+					quantity: 1
 				})
 			});
 
@@ -87,7 +87,7 @@ function HomePage(){
 			alert("An error occurred. Please try again.");
 		}
 	};
-	
+
 	useEffect(() => {
 		// Captures the page scroll and causes effects accordingly.
 		const handleScroll = () => {
@@ -96,7 +96,7 @@ function HomePage(){
 
 			//only update if it exists so that other pages dont get an error when visited
 			const background = document.querySelector('.background');
-			if (background) { 
+			if (background) {
 				let newOpacity = 1 - scrollPosition / 500;
 				if (newOpacity < 0) newOpacity = 0;
 				background.style.opacity = newOpacity;
@@ -129,7 +129,7 @@ function HomePage(){
 		return () => window.removeEventListener('scroll', handleScroll);
 	});
 
-	return(
+	return (
 		<div>
 			<div className="background"></div>
 			<div className="message">
@@ -143,9 +143,9 @@ function HomePage(){
 			<div className="catalogue-wrapper">
 
 				{/*Search functions via keywords*/}
-				<input 
-					type='text' 
-					placeholder='Search Items...' 
+				<input
+					type='text'
+					placeholder='Search Items...'
 					value={searchTerm}
 					onChange={(e) => setSearchTerm(e.target.value)}
 					className='search-bar'
@@ -164,8 +164,8 @@ function HomePage(){
 					</div>
 					<div><label>Price Range:</label>
 						<div className="price-range">
-							<input type="number" placeholder="Min" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} min="0"/>
-							<input type="number" placeholder="Max" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} min="0"/>
+							<input type="number" placeholder="Min" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} min="0" />
+							<input type="number" placeholder="Max" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} min="0" />
 						</div>
 					</div>
 					<div><label>Category:</label>
@@ -190,11 +190,11 @@ function HomePage(){
 				<div className="catalogue">
 					{filteredProduct.map((product, index) => (
 						<div className='product-card' key={index} onClick={() => handleItemClick(product)}>
-						<img src={product.image} class="image"/>
-						<info>
-							<p className="product-name">{product.name}</p>
-							<p className="product-price">${product.price}</p>
-						</info>
+							<img src={product.image} class="image" />
+							<info>
+								<p className="product-name">{product.name}</p>
+								<p className="product-price">${product.price}</p>
+							</info>
 						</div>
 					))}
 
@@ -206,7 +206,7 @@ function HomePage(){
 								<span className='close-button' onClick={handleClose}>&times;</span>
 								<div className="product-modal-inner">
 									<div className="product-modal-left">
-										<img src={selectedProduct.image} className="product-image-full"/>
+										<img src={selectedProduct.image} className="product-image-full" />
 									</div>
 									<div className="product-modal-right">
 										<div className="product-modal-content">

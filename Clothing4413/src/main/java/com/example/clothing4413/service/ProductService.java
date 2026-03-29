@@ -39,10 +39,4 @@ public class ProductService {
     public boolean productExists(Long id) {
         return productRepo.existsById(id);
     }
-
-    /**
-     * For the person doing the product catalogue filtering, you are going 
-     * to want to do it here and write a function to return a list of products.
-     * that match the filter criteria from either a search query or something else.
-     */
 }

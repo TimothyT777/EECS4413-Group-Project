@@ -31,7 +31,7 @@ public class UserService {
     }
 
     public Users findByEmail(String email) {
-        return userRepo.findByEmail(email).orElse(null);
+        return userRepo.findByEmail(email);
     }
 
     public List<Users> findByName(String name) {
@@ -48,7 +48,7 @@ public class UserService {
 
     @Transactional
     public Users registerCustomer(String name, String email, String password) {
-        if (userRepo.findByEmail(email).isPresent()) {
+        if (userRepo.findByEmail(email) != null) {
             throw new IllegalArgumentException("Email is already in use.");
         }
 
@@ -67,8 +67,10 @@ public class UserService {
     }
 
     public Users login(String email, String password) {
-        Users user = userRepo.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid email or password."));
+        Users user = userRepo.findByEmail(email);
+        if (user == null) {
+            throw new IllegalArgumentException("Invalid email or password");
+        }
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new IllegalArgumentException("Invalid email or password.");
