@@ -27,7 +27,7 @@ public class ProductService {
     public Product findProductById(Long id) {
         return productRepo.findProductById(id);
     }
-  
+
     public Product addProduct(String name, String description, double price, int quantity) {
         Product product = new Product(name, description, price, quantity);
         return productRepo.save(product);
@@ -37,7 +37,7 @@ public class ProductService {
         Product product = productRepo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Product not found."));
 
-        product.setQuantity(quantity);
+        product.setStock(quantity);
         return productRepo.save(product);
     }
 

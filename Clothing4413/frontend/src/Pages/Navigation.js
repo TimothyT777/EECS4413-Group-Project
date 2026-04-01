@@ -1,43 +1,12 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
-import '../Styles/HomePage.css';
-
-function Navigation() {
-    const { user } = useAuth();
-
-    return (
-        <div className="topnav">
-            <Link className="active" to="/">Home</Link>
-            <Link className="right" to="/cart">
-                <img src="/img/cart.png" alt="cart" />Cart
-            </Link>
-            {/* Show User Account link if logged in, otherwise show Login and Register */}
-            {user ? (
-                <Link className="right" to="/user">Hello, {user.name}</Link>
-            ) : (
-                <>
-                    <Link className="right" to="/register">Register</Link>
-                    <Link className="right" to="/login">Login</Link>
-                </>
-            )}
-        </div>
-    );
-/*
-import { Link, useNavigate } from "react-router-dom";
 import "../Styles/HomePage.css";
 
 function Navigation() {
-  const navigate = useNavigate();
+  const { user } = useAuth();
 
-  const user = JSON.parse(localStorage.getItem("user"));
   const isLoggedIn = !!user;
   const isAdmin = user?.userType === "ADMINISTRATOR";
-
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    navigate("/");
-    window.location.reload();
-  };
 
   return (
     <div className="topnav">
@@ -50,6 +19,10 @@ function Navigation() {
         </>
       )}
 
+      <Link className="right" to="/cart">
+        <img src="/img/cart.png" alt="cart" />Cart
+      </Link>
+
       {!isLoggedIn && (
         <>
           <Link className="right" to="/register">Register</Link>
@@ -58,15 +31,12 @@ function Navigation() {
       )}
 
       {isLoggedIn && (
-        <button type="button" className="nav-logout" onClick={handleLogout}>
-        Logout
-        </button>
+        <>
+          <Link className="right" to="/user">Hello, {user.name}</Link>
+        </>
       )}
-
-      
     </div>
   );
 }
-*/
 
 export default Navigation;

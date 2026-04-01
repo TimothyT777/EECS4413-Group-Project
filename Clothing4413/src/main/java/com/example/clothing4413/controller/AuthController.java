@@ -5,22 +5,22 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.example.clothing4413.dto.AuthResponse;
 import com.example.clothing4413.dto.LoginRequest;
 import com.example.clothing4413.dto.RegisterRequest;
-import com.example.clothing4413.model.Users;
-import com.example.clothing4413.service.UserService;
-
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
-
-
 import com.example.clothing4413.model.Administrator;
 import com.example.clothing4413.model.Users;
 import com.example.clothing4413.service.UserService;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @RestController
@@ -62,6 +62,8 @@ public class AuthController {
                 request.getPassword()
         );
 
+        session.setAttribute("user", user);
+
         String userType = (user instanceof Administrator) ? "ADMINISTRATOR" : "CUSTOMER";
 
         AuthResponse response = new AuthResponse(
@@ -84,10 +86,17 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser(HttpSession session) {
         Users user = (Users) session.getAttribute("user");
+
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Not logged in"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Not logged in"));
         }
-        return ResponseEntity.ok(new AuthResponse("OK", user.getId(), user.getName(), user.getEmail()));
+
+        String userType = (user instanceof Administrator) ? "ADMINISTRATOR" : "CUSTOMER";
+
+        return ResponseEntity.ok(
+                new AuthResponse("OK", user.getId(), user.getName(), user.getEmail(), userType)
+        );
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

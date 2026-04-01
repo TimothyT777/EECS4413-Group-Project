@@ -1,13 +1,11 @@
 import { useAuth } from "../Context/AuthContext";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../Styles/Auth.css";
 
 function LoginPage() {
-import { Link, useNavigate } from "react-router-dom";
-
-function LoginPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [form, setForm] = useState({
     email: "",
@@ -15,10 +13,6 @@ function LoginPage() {
   });
 
   const [message, setMessage] = useState("");
-
-  const { login } = useAuth();
-
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({
@@ -43,7 +37,12 @@ function LoginPage() {
 
     if (response.ok) {
       setMessage(`Welcome, ${data.name}`);
-      login({ id: data.id, name: data.name, email: data.email });
+      login({
+        id: data.id,
+        name: data.name,
+        email: data.email,
+        userType: data.userType
+      });
       navigate("/");
     } else {
       setMessage(data.message || "Login failed.");

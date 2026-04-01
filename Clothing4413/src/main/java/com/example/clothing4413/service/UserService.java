@@ -13,8 +13,6 @@ import com.example.clothing4413.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 
-import java.util.Optional;
-
 @Service
 public class UserService {
 
@@ -48,6 +46,11 @@ public class UserService {
         return userRepo.findUsersById(id);
     }
 
+    public Users getUserById(Long id) {
+        return userRepo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User not found."));
+    }
+
     @Transactional
     public Users registerCustomer(String name, String email, String password) {
         if (userRepo.findByEmail(email) != null) {
@@ -70,8 +73,9 @@ public class UserService {
 
     public Users login(String email, String password) {
         Users user = userRepo.findByEmail(email);
+
         if (user == null) {
-            throw new IllegalArgumentException("Invalid email or password");
+            throw new IllegalArgumentException("Invalid email or password.");
         }
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
@@ -79,9 +83,7 @@ public class UserService {
         }
 
         return user;
-        return userRepo.save(customer);
     }
-
 
     @Transactional
     public Users updateUser(Long id, String name, String email, String password) {
@@ -93,10 +95,12 @@ public class UserService {
         }
 
         if (email != null && !email.isBlank() && !email.equals(user.getEmail())) {
-            Optional<Users> existingUser = userRepo.findByEmail(email);
-            if (existingUser.isPresent() && !existingUser.get().getId().equals(id)) {
+            Users existingUser = userRepo.findByEmail(email);
+
+            if (existingUser != null && !existingUser.getId().equals(id)) {
                 throw new IllegalArgumentException("Email is already in use.");
             }
+
             user.setEmail(email);
         }
 
