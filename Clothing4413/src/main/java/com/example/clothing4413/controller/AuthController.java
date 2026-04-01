@@ -10,6 +10,13 @@ import org.springframework.web.bind.annotation.*;
 import com.example.clothing4413.dto.AuthResponse;
 import com.example.clothing4413.dto.LoginRequest;
 import com.example.clothing4413.dto.RegisterRequest;
+import com.example.clothing4413.model.Users;
+import com.example.clothing4413.service.UserService;
+
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
+
+
 import com.example.clothing4413.model.Administrator;
 import com.example.clothing4413.model.Users;
 import com.example.clothing4413.service.UserService;
@@ -49,7 +56,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request, HttpSession session) {
         Users user = userService.login(
                 request.getEmail(),
                 request.getPassword()
@@ -68,8 +75,29 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpSession session) {
+        session.invalidate();
+        return ResponseEntity.ok(Map.of("message", "Logged out successfully"));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser(HttpSession session) {
+        Users user = (Users) session.getAttribute("user");
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Not logged in"));
+        }
+        return ResponseEntity.ok(new AuthResponse("OK", user.getId(), user.getName(), user.getEmail()));
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleIllegalArgument(IllegalArgumentException ex) {
         return ResponseEntity.badRequest().body(Map.of("message", ex.getMessage()));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidationErrors(MethodArgumentNotValidException e) {
+        String message = e.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
+        return ResponseEntity.badRequest().body(Map.of("message", message));
     }
 }

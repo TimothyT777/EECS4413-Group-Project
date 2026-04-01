@@ -1,6 +1,10 @@
+import { useAuth } from "../Context/AuthContext";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "../Styles/Auth.css";
+
+function LoginPage() {
+import { Link, useNavigate } from "react-router-dom";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -11,6 +15,10 @@ function LoginPage() {
   });
 
   const [message, setMessage] = useState("");
+
+  const { login } = useAuth();
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({
@@ -27,14 +35,15 @@ function LoginPage() {
       headers: {
         "Content-Type": "application/json"
       },
+      credentials: "include",
       body: JSON.stringify(form)
     });
 
     const data = await response.json();
 
     if (response.ok) {
-      localStorage.setItem("user", JSON.stringify(data));
       setMessage(`Welcome, ${data.name}`);
+      login({ id: data.id, name: data.name, email: data.email });
       navigate("/");
     } else {
       setMessage(data.message || "Login failed.");

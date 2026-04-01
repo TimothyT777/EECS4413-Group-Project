@@ -10,7 +10,9 @@ import com.example.clothing4413.model.Users;
 
 @Repository
 public interface UserRepository extends JpaRepository<Users, Long> {
-    Optional<Users> findByEmail(String email);
+    Users findByEmail(String email);
 
     List<Users> findByName(String name);
+
+    Users findUsersById(Long id);
 }

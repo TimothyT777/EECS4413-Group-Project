@@ -24,6 +24,10 @@ public class ProductService {
         return productRepo.findByName(name);
     }
 
+    public Product findProductById(Long id) {
+        return productRepo.findProductById(id);
+    }
+  
     public Product addProduct(String name, String description, double price, int quantity) {
         Product product = new Product(name, description, price, quantity);
         return productRepo.save(product);
@@ -48,10 +52,4 @@ public class ProductService {
     public boolean productExists(Long id) {
         return productRepo.existsById(id);
     }
-
-    /**
-     * For the person doing the product catalogue filtering, you are going 
-     * to want to do it here and write a function to return a list of products.
-     * that match the filter criteria from either a search query or something else.
-     */
 }

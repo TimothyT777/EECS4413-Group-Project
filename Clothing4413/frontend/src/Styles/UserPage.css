@@ -1,0 +1,230 @@
+.user-page {
+    min-height: calc(100vh - 60px);
+    padding: 40px 24px;
+    background: linear-gradient(135deg, #f5f7fb 0%, #e9eef8 100%);
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.user-container {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+/* User info card */
+.user-info-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 32px 28px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.user-title {
+    font-size: 2rem;
+    color: #1f2937;
+    margin: 0 0 24px 0;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.user-details p {
+    font-size: 1rem;
+    color: #1f2937;
+    margin: 0;
+    padding: 14px 16px;
+    background: #f3f4f6;
+    border-radius: 10px;
+}
+
+.user-label {
+    font-weight: 600;
+    color: #1f2937;
+    margin-right: 8px;
+}
+
+/* Saved billing and shipping info */
+.user-saved-info {
+    margin-bottom: 24px;
+    padding-top: 24px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.user-saved-title {
+    font-size: 1.2rem;
+    color: #1f2937;
+    margin: 0 0 16px 0;
+}
+
+.user-logout {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    background: #fee2e2;
+    color: #dc2626;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.user-logout:hover {
+    background: #fecaca;
+}
+
+.user-logout:active {
+    transform: scale(0.98);
+}
+
+/* Order history section */
+.user-orders {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 32px 28px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.orders-title {
+    font-size: 1.5rem;
+    color: #1f2937;
+    margin: 0 0 24px 0;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.orders-message {
+    color: #6b7280;
+    text-align: center;
+    font-size: 1rem;
+    margin: 20px 0;
+}
+
+/* Individual order card */
+.order-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: #f3f4f6;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.order-id {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+}
+
+.order-date {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+/* Items inside order */
+.order-items {
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.order-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.order-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.order-item-image {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+}
+
+.order-item-info {
+    flex: 1;
+}
+
+.order-item-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+}
+
+.order-item-brand,
+.order-item-quantity,
+.order-item-price {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin: 2px 0 0 0;
+}
+
+.order-item-subtotal {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+}
+
+/* Order footer */
+.order-footer {
+    padding: 16px 20px;
+    background: #f3f4f6;
+    border-top: 1px solid #e5e7eb;
+    text-align: right;
+}
+
+.order-total {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .order-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .order-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .order-item-image {
+        width: 100%;
+        height: 150px;
+    }
+
+    .user-info-card,
+    .user-orders {
+        padding: 24px 18px;
+    }
+}
