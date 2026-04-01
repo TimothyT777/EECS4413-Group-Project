@@ -5,13 +5,7 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.clothing4413.dto.AuthResponse;
 import com.example.clothing4413.dto.LoginRequest;
@@ -22,6 +16,12 @@ import com.example.clothing4413.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
+
+import com.example.clothing4413.model.Administrator;
+import com.example.clothing4413.model.Users;
+import com.example.clothing4413.service.UserService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -42,11 +42,14 @@ public class AuthController {
                 request.getPassword()
         );
 
+        String userType = (user instanceof Administrator) ? "ADMINISTRATOR" : "CUSTOMER";
+
         AuthResponse response = new AuthResponse(
                 "Registration successful.",
                 user.getId(),
                 user.getName(),
-                user.getEmail()
+                user.getEmail(),
+                userType
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -59,13 +62,14 @@ public class AuthController {
                 request.getPassword()
         );
 
-        session.setAttribute("user", user);
+        String userType = (user instanceof Administrator) ? "ADMINISTRATOR" : "CUSTOMER";
 
         AuthResponse response = new AuthResponse(
                 "Login successful.",
                 user.getId(),
                 user.getName(),
-                user.getEmail()
+                user.getEmail(),
+                userType
         );
 
         return ResponseEntity.ok(response);

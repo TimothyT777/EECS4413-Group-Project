@@ -62,6 +62,11 @@ public class Product {
         this.category = category;
         this.image = image;
 
+    public Product(String name, String description, double price, int quantity) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.quantity = quantity;
     }
 
     public Long getProduct_id() {
@@ -80,8 +85,12 @@ public class Product {
         return price;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void setDescription(String description) {
@@ -118,5 +127,9 @@ public class Product {
 
     public void setImage(String image) {
         this.image = image;
+    }
+      
+    public void setPrice(double price) {
+        this.price = price;
     }
 }

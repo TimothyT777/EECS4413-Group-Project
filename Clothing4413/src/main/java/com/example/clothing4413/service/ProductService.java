@@ -8,7 +8,7 @@ import com.example.clothing4413.model.Product;
 import com.example.clothing4413.repository.ProductRepository;
 
 @Service
-public class ProductService { 
+public class ProductService {
 
     private final ProductRepository productRepo;
 
@@ -26,6 +26,19 @@ public class ProductService {
 
     public Product findProductById(Long id) {
         return productRepo.findProductById(id);
+    }
+  
+    public Product addProduct(String name, String description, double price, int quantity) {
+        Product product = new Product(name, description, price, quantity);
+        return productRepo.save(product);
+    }
+
+    public Product updateQuantity(Long id, int quantity) {
+        Product product = productRepo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Product not found."));
+
+        product.setQuantity(quantity);
+        return productRepo.save(product);
     }
 
     public void clear() {

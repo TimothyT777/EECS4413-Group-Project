@@ -13,6 +13,8 @@ import com.example.clothing4413.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 
+import java.util.Optional;
+
 @Service
 public class UserService {
 
@@ -77,5 +79,31 @@ public class UserService {
         }
 
         return user;
+        return userRepo.save(customer);
+    }
+
+
+    @Transactional
+    public Users updateUser(Long id, String name, String email, String password) {
+        Users user = userRepo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User not found."));
+
+        if (name != null && !name.isBlank()) {
+            user.setName(name);
+        }
+
+        if (email != null && !email.isBlank() && !email.equals(user.getEmail())) {
+            Optional<Users> existingUser = userRepo.findByEmail(email);
+            if (existingUser.isPresent() && !existingUser.get().getId().equals(id)) {
+                throw new IllegalArgumentException("Email is already in use.");
+            }
+            user.setEmail(email);
+        }
+
+        if (password != null && !password.isBlank()) {
+            user.setPassword(passwordEncoder.encode(password));
+        }
+
+        return userRepo.save(user);
     }
 }
