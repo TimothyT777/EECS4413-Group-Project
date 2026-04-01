@@ -7,11 +7,17 @@ import RegisterPage from './Pages/RegisterPage';
 import CartPage from './Pages/CartPage';
 import AdminInventoryPage from './Pages/AdminInventoryPage';
 import AdminUsersPage from './Pages/AdminUsersPage';
+import { useAuth } from "./Context/AuthContext";
+import UserPage from './Pages/UserPage';
 
 function ProtectedAdminRoute({ children }) {
-  const user = JSON.parse(localStorage.getItem("user"));
-  const isAdmin = user?.userType === "ADMINISTRATOR";
+  const { user, loading } = useAuth();
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  const isAdmin = user?.userType === "ADMINISTRATOR";
   return isAdmin ? children : <Navigate to="/" replace />;
 }
 
@@ -24,6 +30,8 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/cart" element={<CartPage />} />
+        <Route path="/user" element={<UserPage />} />
+
         <Route
           path="/admin/inventory"
           element={
@@ -32,6 +40,7 @@ function App() {
             </ProtectedAdminRoute>
           }
         />
+
         <Route
           path="/admin/users"
           element={
