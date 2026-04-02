@@ -9,6 +9,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 @Entity
@@ -39,25 +41,22 @@ public class Product {
     @Column(name = "stock", nullable = false)
     private int stock;
 
+    // Legacy DB column still present in your current schema.
+    // Keep it in sync with stock so add/update product works.
+    @Column(name = "quantity", nullable = false)
+    private Integer quantity;
+
     @Column(name = "image")
-    private String image; //Stores a filepath.
+    private String image;
 
-    /**
-     * Probably some other product features we need to add
-     * Maybe make a class with enum for product categories and add that as a field here
-     * would help with the filtering feature.
-     * 
-     * idk what else stock maybe?
-     * Just add as you go and as you need.
-     */
-
-    public Product() {} //For JPA
+    public Product() {}
 
     public Product(String name, String description, double price, int stock, String brand, ProductCategory category, String image) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.stock = stock;
+        this.quantity = stock;
         this.brand = brand;
         this.category = category;
         this.image = image;
@@ -68,6 +67,13 @@ public class Product {
         this.description = description;
         this.price = price;
         this.stock = stock;
+        this.quantity = stock;
+    }
+
+    @PrePersist
+    @PreUpdate
+    private void syncQuantityWithStock() {
+        this.quantity = this.stock;
     }
 
     public Long getProduct_id() {
@@ -86,6 +92,26 @@ public class Product {
         return price;
     }
 
+    public String getBrand() {
+        return brand;
+    }
+
+    public ProductCategory getCategory() {
+        return category;
+    }
+
+    public int getStock() {
+        return stock;
+    }
+
+    // Useful for legacy frontend / JSON consumers
+    public int getQuantity() {
+        return quantity != null ? quantity : stock;
+    }
+
+    public String getImage() {
+        return image;
+    }
 
     public void setName(String name) {
         this.name = name;
@@ -95,39 +121,29 @@ public class Product {
         this.description = description;
     }
 
-    public String getBrand() {
-        return brand;
+    public void setPrice(double price) {
+        this.price = price;
     }
 
     public void setBrand(String brand) {
         this.brand = brand;
     }
 
-    public ProductCategory getCategory() {
-        return category;
-    }
-
     public void setCategory(ProductCategory category) {
         this.category = category;
     }
 
-    public int getStock() {
-        return stock;
-    }
-
     public void setStock(int stock) {
         this.stock = stock;
+        this.quantity = stock;
     }
 
-    public String getImage() {
-        return image;
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+        this.stock = quantity;
     }
 
     public void setImage(String image) {
         this.image = image;
-    }
-      
-    public void setPrice(double price) {
-        this.price = price;
     }
 }

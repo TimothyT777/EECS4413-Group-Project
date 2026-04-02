@@ -29,11 +29,27 @@ public class ProductService {
     }
 
     public Product addProduct(String name, String description, double price, int quantity) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Product name is required.");
+        }
+
+        if (price < 0) {
+            throw new IllegalArgumentException("Price cannot be negative.");
+        }
+
+        if (quantity < 0) {
+            throw new IllegalArgumentException("Quantity cannot be negative.");
+        }
+
         Product product = new Product(name, description, price, quantity);
         return productRepo.save(product);
     }
 
     public Product updateQuantity(Long id, int quantity) {
+        if (quantity < 0) {
+            throw new IllegalArgumentException("Quantity cannot be negative.");
+        }
+
         Product product = productRepo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Product not found."));
 
