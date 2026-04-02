@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import "../Styles/AdminInventory.css";
 
+const PRODUCTS_URL = "http://localhost:8080/api/products";
+const ADMIN_INVENTORY_URL = "http://localhost:8080/api/products/admin/inventory";
+
 function AdminInventoryPage() {
   const [products, setProducts] = useState([]);
   const [message, setMessage] = useState("");
@@ -15,9 +18,25 @@ function AdminInventoryPage() {
   const [quantityUpdates, setQuantityUpdates] = useState({});
 
   const fetchProducts = async () => {
-    const response = await fetch("http://localhost:8080/api/products");
-    const data = await response.json();
-    setProducts(data);
+    try {
+      setMessage("");
+      const response = await fetch(PRODUCTS_URL, {
+        credentials: "include"
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setProducts([]);
+        setMessage(data.message || "Failed to load products.");
+        return;
+      }
+
+      setProducts(data);
+    } catch (error) {
+      setProducts([]);
+      setMessage("Failed to fetch products.");
+    }
   };
 
   useEffect(() => {
@@ -34,32 +53,55 @@ function AdminInventoryPage() {
   const handleAddProduct = async (e) => {
     e.preventDefault();
 
-    const response = await fetch("http://localhost:8080/api/admin/inventory", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        name: newProduct.name,
-        description: newProduct.description,
-        price: parseFloat(newProduct.price),
-        quantity: parseInt(newProduct.quantity)
-      })
-    });
+    const parsedPrice = parseFloat(newProduct.price);
+    const parsedQuantity = parseInt(newProduct.quantity, 10);
 
-    const data = await response.json();
+    if (!newProduct.name.trim()) {
+      setMessage("Product name is required.");
+      return;
+    }
 
-    if (response.ok) {
-      setMessage(`Added product: ${data.name}`);
-      setNewProduct({
-        name: "",
-        description: "",
-        price: "",
-        quantity: ""
+    if (Number.isNaN(parsedPrice) || parsedPrice < 0) {
+      setMessage("Enter a valid price.");
+      return;
+    }
+
+    if (Number.isNaN(parsedQuantity) || parsedQuantity < 0) {
+      setMessage("Enter a valid quantity.");
+      return;
+    }
+
+    try {
+      const response = await fetch(ADMIN_INVENTORY_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          name: newProduct.name.trim(),
+          description: newProduct.description.trim(),
+          price: parsedPrice,
+          quantity: parsedQuantity
+        })
       });
-      fetchProducts();
-    } else {
-      setMessage(data.message || "Failed to add product.");
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage(`Added product: ${data.name}`);
+        setNewProduct({
+          name: "",
+          description: "",
+          price: "",
+          quantity: ""
+        });
+        fetchProducts();
+      } else {
+        setMessage(data.message || "Failed to add product.");
+      }
+    } catch (error) {
+      setMessage("Failed to add product.");
     }
   };
 
@@ -71,23 +113,39 @@ function AdminInventoryPage() {
   };
 
   const handleUpdateQuantity = async (id) => {
-    const response = await fetch(`http://localhost:8080/api/admin/inventory/${id}/quantity`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        quantity: parseInt(quantityUpdates[id])
-      })
-    });
+    const parsedQuantity = parseInt(quantityUpdates[id], 10);
 
-    const data = await response.json();
+    if (Number.isNaN(parsedQuantity) || parsedQuantity < 0) {
+      setMessage("Enter a valid quantity.");
+      return;
+    }
 
-    if (response.ok) {
-      setMessage(`Updated quantity for ${data.name}`);
-      fetchProducts();
-    } else {
-      setMessage(data.message || "Failed to update quantity.");
+    try {
+      const response = await fetch(`${ADMIN_INVENTORY_URL}/${id}/quantity`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          quantity: parsedQuantity
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage(`Updated quantity for ${data.name}`);
+        setQuantityUpdates({
+          ...quantityUpdates,
+          [id]: ""
+        });
+        fetchProducts();
+      } else {
+        setMessage(data.message || "Failed to update quantity.");
+      }
+    } catch (error) {
+      setMessage("Failed to update quantity.");
     }
   };
 
@@ -162,8 +220,10 @@ function AdminInventoryPage() {
                     </div>
 
                     <div className="inventory-meta">
-                      <div className="inventory-badge">Price: ${product.price}</div>
-                      <div className="inventory-badge">Quantity: {product.quantity}</div>
+                      <div className="inventory-badge">Price: ${Number(product.price).toFixed(2)}</div>
+                      <div className="inventory-badge">
+                        Quantity: {product.stock ?? product.quantity ?? 0}
+                      </div>
                       <div className="inventory-badge">ID: {product.product_id}</div>
                     </div>
 

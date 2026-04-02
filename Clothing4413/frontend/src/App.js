@@ -5,8 +5,10 @@ import Navigation from './Pages/Navigation';
 import LoginPage from './Pages/LoginPage';
 import RegisterPage from './Pages/RegisterPage';
 import CartPage from './Pages/CartPage';
+import CheckoutPage from './Pages/CheckoutPage';
 import AdminInventoryPage from './Pages/AdminInventoryPage';
 import AdminUsersPage from './Pages/AdminUsersPage';
+import AdminSalesHistoryPage from './Pages/AdminSalesHistoryPage';
 import { useAuth } from "./Context/AuthContext";
 import UserPage from './Pages/UserPage';
 
@@ -30,6 +32,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/user" element={<UserPage />} />
 
         <Route
@@ -46,6 +49,15 @@ function App() {
           element={
             <ProtectedAdminRoute>
               <AdminUsersPage />
+            </ProtectedAdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/sales-history"
+          element={
+            <ProtectedAdminRoute>
+              <AdminSalesHistoryPage />
             </ProtectedAdminRoute>
           }
         />

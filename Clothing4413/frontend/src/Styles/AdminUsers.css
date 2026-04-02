@@ -13,9 +13,18 @@
   color: #555;
 }
 
+.admin-users-global-message {
+  margin-bottom: 20px;
+  padding: 12px 14px;
+  background: #fff3cd;
+  border-radius: 10px;
+  color: #7a5d00;
+  font-weight: 600;
+}
+
 .admin-users-layout {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 1.6fr 1fr;
   gap: 24px;
   align-items: start;
 }
@@ -74,13 +83,52 @@
   font-size: 15px;
 }
 
-.admin-users-message {
-  margin-top: 16px;
-  color: #333;
-  font-weight: 600;
+.admin-user-orders {
+  margin-top: 28px;
 }
 
-@media (max-width: 900px) {
+.admin-user-orders h3 {
+  margin-bottom: 14px;
+}
+
+.admin-order-card {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  background: #fafafa;
+}
+
+.admin-order-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.admin-order-total {
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.admin-order-items-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-order-items-table th,
+.admin-order-items-table td {
+  border-bottom: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+.admin-order-items-table th {
+  background: #f0f0f0;
+}
+
+@media (max-width: 1000px) {
   .admin-users-layout {
     grid-template-columns: 1fr;
   }

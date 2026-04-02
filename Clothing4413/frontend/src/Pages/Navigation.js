@@ -16,6 +16,7 @@ function Navigation() {
         <>
           <Link className="right" to="/admin/users">Admin Users</Link>
           <Link className="right" to="/admin/inventory">Admin Inventory</Link>
+          <Link className="right" to="/admin/sales-history">Admin Sales</Link>
         </>
       )}
 
