@@ -23,6 +23,17 @@ function ProtectedAdminRoute({ children }) {
   return isAdmin ? children : <Navigate to="/" replace />;
 }
 
+function ProtectedCustomerRoute({ children }) {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  const isCustomer = user?.userType === "CUSTOMER";
+  return isCustomer ? children : <Navigate to="/" replace />;
+}
+
 function App() {
   return (
     <Router>
@@ -31,8 +42,23 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route
+          path="/cart"
+          element={
+            <ProtectedCustomerRoute>
+              <CartPage />
+            </ProtectedCustomerRoute>
+          }
+        />
+
+        <Route
+          path="/checkout"
+          element={
+            <ProtectedCustomerRoute>
+              <CheckoutPage />
+            </ProtectedCustomerRoute>
+          }
+        />
         <Route path="/user" element={<UserPage />} />
 
         <Route

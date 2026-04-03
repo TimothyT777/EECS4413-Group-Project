@@ -20,9 +20,11 @@ function Navigation() {
         </>
       )}
 
-      <Link className="right" to="/cart">
-        <img src="/img/cart.png" alt="cart" />Cart
-      </Link>
+      {!isAdmin && (
+        <Link className="right" to="/cart">
+          <img src="/img/cart.png" alt="cart" />Cart
+        </Link>
+      )}
 
       {!isLoggedIn && (
         <>
