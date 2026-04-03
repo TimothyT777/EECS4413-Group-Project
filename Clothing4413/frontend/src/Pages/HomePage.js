@@ -1,22 +1,24 @@
 import '../Styles/HomePage.css';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "../Context/AuthContext";
 import '../index.css';
 
 function HomePage() {
 	const [searchTerm, setSearchTerm] = useState("");
+	const [debouncedSearch, setDebouncedSearch] = useState("");
 	const [selectedProduct, setSelectedProduct] = useState(null);
 	const [selectedBrand, setSelectedBrand] = useState("");
 	const [selectedCategory, setSelectedCategory] = useState("");
 	const [sortOrder, setSortOrder] = useState("");
-	const [minPrice, setMinPrice] = useState("");
-	const [maxPrice, setMaxPrice] = useState("");
+	const [minPrice, setMinPrice] = useState(null);
+	const [maxPrice, setMaxPrice] = useState(null);
 	const [products, setProducts] = useState([]);
 
 	const { user } = useAuth();
-	const isAdmin = user?.userType === "ADMINISTRATOR";
 
 	// Gets all the products from the database.
+	const brands = useMemo(() => [...new Set(products.map(p => p.brand))], [products]);
+  	const category = useMemo(() => [...new Set(products.map(p => p.category))], [products]);
 	useEffect(() => {
 		const fetchProducts = async () => {
 			try {
@@ -30,28 +32,35 @@ function HomePage() {
 		fetchProducts();
 	}, []);
 
-	// Advanced filters combing search term, category, brand, and price range.
-	const brands = [...new Set(products.map(product => product.brand))];
-	const category = [...new Set(products.map(product => product.category))];
-	const filteredProduct = products.filter((products) => {
-		const matchedTerm = products.name.toLowerCase().includes(searchTerm.toLowerCase())
-		const matchedCategory = selectedCategory ? products.category === selectedCategory : true;
-		const matchedBrand = selectedBrand ? products.brand === selectedBrand : true;
-		const matchedMinPrice = minPrice !== "" ? products.price >= parseFloat(minPrice) : true;
-		const matchedMaxPrice = maxPrice !== "" ? products.price <= parseFloat(maxPrice) : true;
-		return matchedTerm && matchedCategory && matchedBrand && matchedMinPrice && matchedMaxPrice;
-	});
+	// Debouncing for search.
+	useEffect(() => {
+		const handler = setTimeout(() => {
+		setDebouncedSearch(searchTerm);
+		}, 300);
+			return () => clearTimeout(handler);
+	}, [searchTerm]);
 
-	// Sort by alphabetical or by price.
-	if (sortOrder === "asc") {
-		filteredProduct.sort((a, b) => a.name.localeCompare(b.name));
-	} else if (sortOrder === "desc") {
-		filteredProduct.sort((a, b) => b.name.localeCompare(a.name));
-	} else if (sortOrder === "price-asc") {
-		filteredProduct.sort((a, b) => a.price - b.price);
-	} else if (sortOrder === "price-desc") {
-		filteredProduct.sort((a, b) => b.price - a.price);
-	}
+	// Advanced filters combing search term, category, brand, and price range.
+	const filteredProduct = useMemo(() => {
+		const term = debouncedSearch.toLowerCase(); // only convert once per search
+		const min = minPrice != null ? minPrice : -Infinity;
+  		const max = maxPrice != null ? maxPrice : Infinity;
+		return products.filter(p => {
+			const matchedTerm = term ? p.name.toLowerCase().includes(term) : true;
+			const matchedCategory = selectedCategory ? p.category === selectedCategory : true;
+			const matchedBrand = selectedBrand ? p.brand === selectedBrand : true;
+			const matchedMinPrice = minPrice != null ? Number(p.price) >= minPrice : true;
+			const matchedMaxPrice = maxPrice != null ? Number(p.price) <= maxPrice : true;
+			return matchedTerm && matchedCategory && matchedBrand && matchedMinPrice && matchedMaxPrice;
+		}).sort((a, b) => {
+			if (sortOrder === "asc") return a.name.localeCompare(b.name);
+			if (sortOrder === "desc") return b.name.localeCompare(a.name);
+			if (sortOrder === "price-asc") return a.price - b.price;
+			if (sortOrder === "price-desc") return b.price - a.price;
+			return 0;
+		});
+ 	}, [products, debouncedSearch, selectedCategory, selectedBrand, minPrice, maxPrice, sortOrder]);
+
 
 
 	// Handles clicking on catalogue items.
@@ -62,11 +71,6 @@ function HomePage() {
 	const handleAddToCart = async (product) => {
 		if (!user) {
 			alert("Please log in to add items to your cart.");
-			return;
-		}
-
-		if (isAdmin) {
-			alert("Administrators cannot add items to the cart.");
 			return;
 		}
 
@@ -94,18 +98,25 @@ function HomePage() {
 		}
 	};
 
+	
 	useEffect(() => {
+		const background = document.querySelector('.background');
+		const messageText = document.querySelector('.message');
+		const scrollText = document.querySelector('.text-slide');
+		const scrollCatalogue = document.querySelector('.catalogue');
+		const searchCatalogue = document.querySelector('.search-bar');
+		const searchAdvanced = document.querySelector('.search-advanced');
+
 		// Captures the page scroll and causes effects accordingly.
 		const handleScroll = () => {
 			// Measures the current scroll position on the page.
 			const scrollPosition = window.scrollY;
+			const scrollTrigger = window.innerHeight * 0.5;
 
 			//only update if it exists so that other pages dont get an error when visited
-			const background = document.querySelector('.background');
 			if (background) {
 				let newOpacity = 1 - scrollPosition / 500;
-				if (newOpacity < 0) newOpacity = 0;
-				background.style.opacity = newOpacity;
+				background.style.opacity = Math.max(newOpacity, 0);
 			}
 
 			// Fades the initial greeting background image out while scrolling down.
@@ -114,17 +125,15 @@ function HomePage() {
 			background.style.opacity = newOpacity;
 
 			// Slides in and shows the catalogue and searchbar
-			const scrollText = document.querySelector('.text-slide');
-			const scrollCatalogue = document.querySelector('.catalogue');
-			const searchCatalogue = document.querySelector('.search-bar');
-			const searchAdvanced = document.querySelector('.search-advanced');
-			if (scrollPosition > 400) {
+			if (scrollPosition > scrollTrigger) {
+				messageText.classList.add('inactive');
 				scrollText.classList.add('active');
 				scrollCatalogue.classList.add('visible');
 				searchCatalogue.classList.add('visible');
 				searchAdvanced.classList.add('visible');
 			}
 			else {
+				messageText.classList.remove('inactive');
 				scrollText.classList.remove('active');
 				scrollCatalogue.classList.remove('visible');
 				searchCatalogue.classList.remove('visible');
@@ -132,21 +141,24 @@ function HomePage() {
 			}
 		}
 		window.addEventListener('scroll', handleScroll);
+		window.addEventListener('load', handleScroll);
 		return () => window.removeEventListener('scroll', handleScroll);
 	});
 
 	return (
 		<div>
-			<div className="background"></div>
-			<div className="message">
-				<h1>WELCOME TO A REAL WEBSITE</h1>
-				<h2>This is not a scam web-site</h2>
-				<h3>You can tell by the way it is</h3>
+			<div className="background">
+				<div className="message">
+					<h1>4413-CLOTHING</h1>
+					<h2>A functional website for all your clothing needs</h2>
+					<h3>Owners: Timothy Tolstinev, Justin Oguntala, Eric Nguyen, Eiad Sayed Suliman</h3>
+				</div>
 			</div>
 
 			{/*Everything catalogue-related begins here */}
-			<div className="text-slide">Our (Legitimate) Catalogue</div>
+			
 			<div className="catalogue-wrapper">
+				<div className="text-slide">Our Curated Catalogue</div>
 
 				{/*Search functions via keywords*/}
 				<input
@@ -170,8 +182,8 @@ function HomePage() {
 					</div>
 					<div><label>Price Range:</label>
 						<div className="price-range">
-							<input type="number" placeholder="Min" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} min="0" />
-							<input type="number" placeholder="Max" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} min="0" />
+							<input type="number" placeholder="Min" value={minPrice ?? ""} onChange={(e) => setMinPrice(e.target.value ? Number(e.target.value) : null)} min="0" />
+							<input type="number" placeholder="Max" value={maxPrice ?? ""} onChange={(e) => setMaxPrice(e.target.value ? Number(e.target.value) : null)} min="0" />
 						</div>
 					</div>
 					<div><label>Category:</label>
@@ -203,35 +215,35 @@ function HomePage() {
 							</info>
 						</div>
 					))}
+				</div>
+			</div>
 
-					{/*Displays more info about a product when clicked.
-					   Notably, the modal is separated by left side (product image) and right side (product info)*/}
-					{selectedProduct && (
-						<div className='product-modal' onClick={handleClose}>
-							<div className='product-content' onClick={(e) => e.stopPropagation()}>
-								<span className='close-button' onClick={handleClose}>&times;</span>
-								<div className="product-modal-inner">
-									<div className="product-modal-left">
-										<img src={selectedProduct.image} className="product-image-full" />
-									</div>
-									<div className="product-modal-right">
-										<div className="product-modal-content">
-											<p className="product-name">{selectedProduct.name}</p>
-											<p className="product-price">${selectedProduct.price}</p>
-											<p className="product-stock">Only <span className="product-stock-amount">{selectedProduct.stock}</span> in stock!</p>
-											<p className="product-description">{selectedProduct.description}</p>
-										</div>
-										{!isAdmin && (
-											<button className='add-to-cart' onClick={() => handleAddToCart(selectedProduct)}>
-												Add to cart
-											</button>
-										)}
-									</div>
+			{/*Displays more info about a product when clicked.
+				Notably, the modal is separated by left side (product image) and right side (product info)*/}
+			{selectedProduct && (
+				<div className='product-modal' onClick={handleClose}>
+					<div className='product-content' onClick={(e) => e.stopPropagation()}>
+						<span className='close-button' onClick={handleClose}>&times;</span>
+						<div className="product-modal-inner">
+							<div className="product-modal-left">
+								<img src={selectedProduct.image} className="product-image-full" />
+							</div>
+							<div className="product-modal-right">
+								<div className="product-modal-content">
+									<p className="product-name">{selectedProduct.name}</p>
+									<p className="product-price">${selectedProduct.price}</p>
+									<p className="product-stock">Only <span className="product-stock-amount">{selectedProduct.stock}</span> in stock!</p>
+									<p className="product-description">{selectedProduct.description}</p>
 								</div>
+								<button className='add-to-cart' onClick={() => handleAddToCart(selectedProduct)}>Add to cart</button>
 							</div>
 						</div>
-					)}
+					</div>
 				</div>
+			)}
+			<div className="footer">
+				<p>&copy; {new Date().getFullYear()} 4413-Clothing. All rights reserved. Created for EECS4413M.</p>
+				<p>Timothy Tolstinev, Justin Oguntala, Eric Nguyen, Eiad Sayed Suliman</p>
 			</div>
 		</div>
 	);
