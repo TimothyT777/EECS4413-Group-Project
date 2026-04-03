@@ -12,8 +12,9 @@ function HomePage() {
 	const [minPrice, setMinPrice] = useState("");
 	const [maxPrice, setMaxPrice] = useState("");
 	const [products, setProducts] = useState([]);
- 
+
 	const { user, addToGuestCart } = useAuth();
+	const isAdmin = user?.userType === "ADMINISTRATOR";
 
 	// Gets all the products from the database.
 	useEffect(() => {
@@ -63,6 +64,11 @@ function HomePage() {
 			addToGuestCart(product);
 			alert(`${product.name} added to cart!`);
         	handleClose();
+			return;
+		}
+
+		if (isAdmin) {
+			alert("Administrators cannot add items to the cart.");
 			return;
 		}
 
@@ -212,7 +218,11 @@ function HomePage() {
 											<p className="product-stock">Only <span className="product-stock-amount">{selectedProduct.stock}</span> in stock!</p>
 											<p className="product-description">{selectedProduct.description}</p>
 										</div>
-										<button className='add-to-cart' onClick={() => handleAddToCart(selectedProduct)}>Add to cart</button>
+										{!isAdmin && (
+											<button className='add-to-cart' onClick={() => handleAddToCart(selectedProduct)}>
+												Add to cart
+											</button>
+										)}
 									</div>
 								</div>
 							</div>

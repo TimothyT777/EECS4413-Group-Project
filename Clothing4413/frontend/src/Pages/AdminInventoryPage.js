@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "../Styles/AdminInventory.css";
 
 const PRODUCTS_URL = "http://localhost:8080/api/products";
@@ -7,12 +7,14 @@ const ADMIN_INVENTORY_URL = "http://localhost:8080/api/products/admin/inventory"
 function AdminInventoryPage() {
   const [products, setProducts] = useState([]);
   const [message, setMessage] = useState("");
+  const fileInputRef = useRef(null);
 
   const [newProduct, setNewProduct] = useState({
     name: "",
     description: "",
     price: "",
-    quantity: ""
+    quantity: "",
+    image: null
   });
 
   const [quantityUpdates, setQuantityUpdates] = useState({});
@@ -44,9 +46,19 @@ function AdminInventoryPage() {
   }, []);
 
   const handleNewProductChange = (e) => {
+    const { name, value, files } = e.target;
+
+    if (name === "image") {
+      setNewProduct({
+        ...newProduct,
+        image: files && files[0] ? files[0] : null
+      });
+      return;
+    }
+
     setNewProduct({
       ...newProduct,
-      [e.target.name]: e.target.value
+      [name]: value
     });
   };
 
@@ -71,19 +83,23 @@ function AdminInventoryPage() {
       return;
     }
 
+    if (!newProduct.image) {
+      setMessage("Please upload a product image.");
+      return;
+    }
+
     try {
+      const formData = new FormData();
+      formData.append("name", newProduct.name.trim());
+      formData.append("description", newProduct.description.trim());
+      formData.append("price", parsedPrice);
+      formData.append("quantity", parsedQuantity);
+      formData.append("image", newProduct.image);
+
       const response = await fetch(ADMIN_INVENTORY_URL, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
         credentials: "include",
-        body: JSON.stringify({
-          name: newProduct.name.trim(),
-          description: newProduct.description.trim(),
-          price: parsedPrice,
-          quantity: parsedQuantity
-        })
+        body: formData
       });
 
       const data = await response.json();
@@ -94,8 +110,14 @@ function AdminInventoryPage() {
           name: "",
           description: "",
           price: "",
-          quantity: ""
+          quantity: "",
+          image: null
         });
+
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+
         fetchProducts();
       } else {
         setMessage(data.message || "Failed to add product.");
@@ -163,7 +185,7 @@ function AdminInventoryPage() {
           <div className="admin-card">
             <h2>Add Product</h2>
 
-            <form className="admin-form" onSubmit={handleAddProduct}>
+            <form className="admin-form" onSubmit={handleAddProduct} encType="multipart/form-data">
               <input
                 type="text"
                 name="name"
@@ -197,6 +219,14 @@ function AdminInventoryPage() {
                 onChange={handleNewProductChange}
               />
 
+              <input
+                ref={fileInputRef}
+                type="file"
+                name="image"
+                accept="image/*"
+                onChange={handleNewProductChange}
+              />
+
               <button className="admin-btn" type="submit">
                 Add Product
               </button>
@@ -213,9 +243,17 @@ function AdminInventoryPage() {
                 products.map((product) => (
                   <div key={product.product_id} className="inventory-item">
                     <div className="inventory-top">
-                      <div>
-                        <h3>{product.name}</h3>
-                        <p className="inventory-description">{product.description}</p>
+                      <div className="inventory-product-info">
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="inventory-image"
+                        />
+
+                        <div>
+                          <h3>{product.name}</h3>
+                          <p className="inventory-description">{product.description}</p>
+                        </div>
                       </div>
                     </div>
 
