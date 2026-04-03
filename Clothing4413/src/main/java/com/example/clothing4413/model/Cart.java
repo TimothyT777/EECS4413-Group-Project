@@ -92,14 +92,21 @@ public class Cart {
         while (iterator.hasNext()) {
             CartItem item = iterator.next();
             if (item.getProduct().getProduct_id().equals(product.getProduct_id())) {
-                item.setQuantity(item.getQuantity() + quantity);
+                int existingQuantity = item.getQuantity();
+                int newQuantity = existingQuantity + quantity;
+
+                if (newQuantity > product.getStock()) {
+                    newQuantity = product.getStock(); // Set to max available stock if requested quantity exceeds stock
+                } 
+
+                item.setQuantity(newQuantity);
                 this.updatedAt = LocalDateTime.now();
                 return;
             }
         }
 
         //If the product is not in the cart, add it.
-        items.add(new CartItem(this, product, quantity));
+        items.add(new CartItem(this, product, Math.min(quantity, product.getStock())));
         this.updatedAt = LocalDateTime.now();
     }  
 

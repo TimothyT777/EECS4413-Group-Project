@@ -117,7 +117,6 @@ function CheckoutPage() {
                     <p className="checkout-success-subtitle">Thank you for your purchase.</p>
                     <div className="summary-section">
                         <h2>Order #{orderSummary.id}</h2>
-                        <p>Status: {orderSummary.status}</p>
                         {orderSummary.items.map((item) => (
                             <div className="summary-item" key={item.id}>
                                 <img src={item.product.image} alt={item.product.name} className="summary-image"/>

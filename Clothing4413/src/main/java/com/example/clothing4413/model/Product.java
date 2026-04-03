@@ -41,11 +41,6 @@ public class Product {
     @Column(name = "stock", nullable = false)
     private int stock;
 
-    // Legacy DB column still present in your current schema.
-    // Keep it in sync with stock so add/update product works.
-    @Column(name = "quantity", nullable = false)
-    private Integer quantity;
-
     @Column(name = "image")
     private String image;
 
@@ -67,13 +62,6 @@ public class Product {
         this.description = description;
         this.price = price;
         this.stock = stock;
-        this.quantity = stock;
-    }
-
-    @PrePersist
-    @PreUpdate
-    private void syncQuantityWithStock() {
-        this.quantity = this.stock;
     }
 
     public Long getProduct_id() {
@@ -102,11 +90,6 @@ public class Product {
 
     public int getStock() {
         return stock;
-    }
-
-    // Useful for legacy frontend / JSON consumers
-    public int getQuantity() {
-        return quantity != null ? quantity : stock;
     }
 
     public String getImage() {
@@ -139,7 +122,6 @@ public class Product {
     }
 
     public void setQuantity(int quantity) {
-        this.quantity = quantity;
         this.stock = quantity;
     }
 

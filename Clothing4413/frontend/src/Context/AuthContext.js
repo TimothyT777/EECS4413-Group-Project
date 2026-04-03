@@ -4,6 +4,7 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [guestCart, setGuestCart] = useState([]); //Cart for users who are not logged in
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -51,8 +52,25 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  //Add an item to the guest cart.
+  const addToGuestCart = (product) => {
+    setGuestCart(prev => {
+      for (let i = 0; i < prev.length; i++) {
+        if (prev[i].product.product_id === product.product_id) {
+          const updated = [...prev];
+          updated[i] = { ...updated[i], quantity: updated[i].quantity + 1 };
+          return updated;
+        }
+      }
+      return [...prev, { product, quantity: 1 }];
+    });
+  };
+
+  //Clear the guest cart
+  const clearGuestCart = () => setGuestCart([]);
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, loading, clearGuestCart, guestCart, addToGuestCart }}>
       {children}
     </AuthContext.Provider>
   );
