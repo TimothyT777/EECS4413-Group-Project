@@ -1,9 +1,15 @@
 package com.example.clothing4413.service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.example.clothing4413.dto.AdminSalesItemResponse;
+import com.example.clothing4413.dto.AdminSalesOrderResponse;
 import com.example.clothing4413.dto.CheckoutRequest;
 import com.example.clothing4413.model.Cart;
 import com.example.clothing4413.model.CartItem;
@@ -22,14 +28,20 @@ import jakarta.transaction.Transactional;
 @Service
 @Transactional
 public class OrderService {
-    
+
     private final OrderRepository orderRepository;
     private final CartRepository cartRepository;
     private final UserRepository userRepository;
     private final PaymentService paymentService;
     private final ProductRepository productRepository;
 
-    public OrderService(OrderRepository orderRepository, CartRepository cartRepository, UserRepository userRepository, PaymentService paymentService, ProductRepository productRepository) {
+    public OrderService(
+            OrderRepository orderRepository,
+            CartRepository cartRepository,
+            UserRepository userRepository,
+            PaymentService paymentService,
+            ProductRepository productRepository
+    ) {
         this.orderRepository = orderRepository;
         this.cartRepository = cartRepository;
         this.userRepository = userRepository;
@@ -37,12 +49,60 @@ public class OrderService {
         this.productRepository = productRepository;
     }
 
-    //Returns a list of all orders from a customer
+    // Returns a list of all orders from a customer
     public List<Order> getOrderByCustomerId(Long customerId) {
         return orderRepository.findByCustomerId(customerId);
     }
 
-    //Checks out a cart using customer's billing information from checkoutRequest
+    // Admin sales history with optional filters
+    public List<AdminSalesOrderResponse> getSalesHistory(
+            Long customerId,
+            Long productId,
+            LocalDate startDate,
+            LocalDate endDate
+    ) {
+        return orderRepository.findAll()
+                .stream()
+                .filter(order -> customerId == null || order.getCustomer().getId().equals(customerId))
+                .filter(order -> startDate == null || !order.getCreatedAt().toLocalDate().isBefore(startDate))
+                .filter(order -> endDate == null || !order.getCreatedAt().toLocalDate().isAfter(endDate))
+                .map(order -> buildAdminSalesOrderResponse(order, productId))
+                .filter(orderResponse -> !orderResponse.getItems().isEmpty())
+                .sorted(Comparator.comparing(AdminSalesOrderResponse::getCreatedAt).reversed())
+                .collect(Collectors.toList());
+    }
+
+    private AdminSalesOrderResponse buildAdminSalesOrderResponse(Order order, Long productId) {
+        List<AdminSalesItemResponse> itemResponses = new ArrayList<>();
+
+        for (OrderItem item : order.getItems()) {
+            if (productId != null && !item.getProduct().getProduct_id().equals(productId)) {
+                continue;
+            }
+
+            AdminSalesItemResponse itemResponse = new AdminSalesItemResponse();
+            itemResponse.setOrderItemId(item.getId());
+            itemResponse.setProductId(item.getProduct().getProduct_id());
+            itemResponse.setProductName(item.getProduct().getName());
+            itemResponse.setProductBrand(item.getProduct().getBrand());
+            itemResponse.setQuantity(item.getQuantity());
+            itemResponse.setPriceAtPurchase(item.getPriceAtPurchase());
+
+            itemResponses.add(itemResponse);
+        }
+
+        AdminSalesOrderResponse response = new AdminSalesOrderResponse();
+        response.setId(order.getId());
+        response.setCustomerId(order.getCustomer().getId());
+        response.setCustomerName(order.getCustomer().getName());
+        response.setCustomerEmail(order.getCustomer().getEmail());
+        response.setCreatedAt(order.getCreatedAt());
+        response.setItems(itemResponses);
+
+        return response;
+    }
+
+    // Checks out a cart using customer's billing information from checkoutRequest
     public Order checkout(CheckoutRequest request) {
         Users user = userRepository.findUsersById(request.getCustomerId());
         if (user == null) {
@@ -56,59 +116,69 @@ public class OrderService {
 
         Cart cart = cartRepository.findByCustomerId(request.getCustomerId());
         if (cart.getItems().isEmpty()) {
-            throw new IllegalStateException("Cart is empty"); //This should never happen due to how frontend hides checkout if cart is empty but just in case
+            throw new IllegalStateException("Cart is empty");
         }
 
-        //Get total cost of the cart
         double total = 0;
         for (CartItem item : cart.getItems()) {
             total += item.getProduct().getPrice() * item.getQuantity();
         }
 
-        //Process the payment
-        boolean paymentOK = paymentService.processPayment(request.getCardNumber(), request.getCardExpiry(), request.getCardHolderName(), total);
+        boolean paymentOK = paymentService.processPayment(
+                request.getCardNumber(),
+                request.getCardExpiry(),
+                request.getCardHolderName(),
+                total
+        );
+
         if (!paymentOK) {
             throw new IllegalStateException("Payment Authorization Failed, try again");
         }
 
-        //If they check the "save info" button, save their billing information
         if (request.isSaveInfo()) {
-            saveBillingInfo(customer, request.getShippingAddress(), request.getBillingAddress(), request.getCardNumber(), request.getCardHolderName(), request.getCardExpiry());
+            saveBillingInfo(
+                    customer,
+                    request.getShippingAddress(),
+                    request.getBillingAddress(),
+                    request.getCardNumber(),
+                    request.getCardHolderName(),
+                    request.getCardExpiry()
+            );
             userRepository.saveAndFlush(customer);
         }
 
-        //Create Order and save it to the db
         Order order = new Order(customer);
         orderRepository.saveAndFlush(order);
 
-        //Convert all items in the cart to order items and add them to the order
         for (CartItem cartItem : cart.getItems()) {
             OrderItem orderItem = new OrderItem(order, cartItem.getProduct(), cartItem.getQuantity());
             order.getItems().add(orderItem);
 
-            //When an Item gets added to the order, the stock of that item has to go down as well
             Product product = cartItem.getProduct();
             int newStock = product.getStock() - cartItem.getQuantity();
             if (newStock < 0) {
-                throw new IllegalStateException(product.getName() + " Stock is below 0"); //Should never happen since the cart bounds how much of a product you can add by stock
+                throw new IllegalStateException(product.getName() + " Stock is below 0");
             }
             product.setStock(newStock);
             productRepository.saveAndFlush(product);
-
         }
 
-        //Update the order with all items inside
         orderRepository.saveAndFlush(order);
 
-        //Clear cart
         cart.getItems().clear();
         cartRepository.saveAndFlush(cart);
 
         return order;
     }
 
-    //Method that sets customer payment info
-    private void saveBillingInfo(Customer customer, String shippingAddress, String billingAddress, String cardNumber, String cardHolderName, String cardExpiry) {
+    private void saveBillingInfo(
+            Customer customer,
+            String shippingAddress,
+            String billingAddress,
+            String cardNumber,
+            String cardHolderName,
+            String cardExpiry
+    ) {
         customer.setShippingAddress(shippingAddress);
         customer.setBillingAddress(billingAddress);
         customer.setCardNumber(cardNumber);

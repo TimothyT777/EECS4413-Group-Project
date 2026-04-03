@@ -6,14 +6,16 @@ public class AuthResponse {
     private Long id;
     private String name;
     private String email;
+    private String userType;
 
     public AuthResponse() {}
 
-    public AuthResponse(String message, Long id, String name, String email) {
+    public AuthResponse(String message, Long id, String name, String email, String userType) {
         this.message = message;
         this.id = id;
         this.name = name;
         this.email = email;
+        this.userType = userType;
     }
 
     public String getMessage() {
@@ -30,5 +32,9 @@ public class AuthResponse {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getUserType() {
+        return userType;
     }
 }

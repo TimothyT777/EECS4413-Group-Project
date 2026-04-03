@@ -12,8 +12,8 @@ function HomePage() {
 	const [minPrice, setMinPrice] = useState("");
 	const [maxPrice, setMaxPrice] = useState("");
 	const [products, setProducts] = useState([]);
-
-	const { user } = useAuth();
+ 
+	const { user, addToGuestCart } = useAuth();
 
 	// Gets all the products from the database.
 	useEffect(() => {
@@ -57,10 +57,12 @@ function HomePage() {
 	const handleItemClick = (products) => setSelectedProduct(products);
 	const handleClose = () => setSelectedProduct(null);
 
-	//Handles adding an item to the cart
+	//Handles adding an item to the cart, including guest cart
 	const handleAddToCart = async (product) => {
 		if (!user) {
-			alert("Please log in to add items to your cart.");
+			addToGuestCart(product);
+			alert(`${product.name} added to cart!`);
+        	handleClose();
 			return;
 		}
 
@@ -77,7 +79,7 @@ function HomePage() {
 			});
 
 			if (response.ok) {
-				alert('${product.name} added to cart!');
+				alert(`${product.name} added to cart!`);
 				handleClose();
 			} else {
 				alert("Failed to add item to cart.");
@@ -101,11 +103,6 @@ function HomePage() {
 				if (newOpacity < 0) newOpacity = 0;
 				background.style.opacity = newOpacity;
 			}
-
-			// Fades the initial greeting background image out while scrolling down.
-			let newOpacity = 1 - scrollPosition / 500;
-			if (newOpacity < 0) newOpacity = 0;
-			background.style.opacity = newOpacity;
 
 			// Slides in and shows the catalogue and searchbar
 			const scrollText = document.querySelector('.text-slide');

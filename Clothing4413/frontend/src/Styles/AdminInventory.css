@@ -1,0 +1,186 @@
+.admin-page {
+  min-height: calc(100vh - 60px);
+  padding: 32px 24px;
+  background: linear-gradient(135deg, #f5f7fb 0%, #e9eef8 100%);
+  box-sizing: border-box;
+}
+
+.admin-container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.admin-header {
+  margin-bottom: 24px;
+}
+
+.admin-header h1 {
+  margin: 0 0 8px;
+  font-size: 2rem;
+  color: #1f2937;
+}
+
+.admin-header p {
+  margin: 0;
+  color: #6b7280;
+}
+
+.admin-message {
+  margin-bottom: 20px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #eef4ff;
+  color: #1d4ed8;
+  font-weight: 500;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 24px;
+}
+
+.admin-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.admin-card h2 {
+  margin-top: 0;
+  margin-bottom: 18px;
+  color: #111827;
+  font-size: 1.25rem;
+}
+
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-form input {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.admin-form input:focus,
+.inventory-update input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.admin-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 12px 14px;
+  background: #2563eb;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-btn:hover {
+  background: #1d4ed8;
+}
+
+.inventory-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.inventory-item {
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 18px;
+  background: #fafafa;
+}
+
+.inventory-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+.inventory-top h3 {
+  margin: 0 0 6px;
+  color: #111827;
+  font-size: 1.1rem;
+}
+
+.inventory-description {
+  margin: 0;
+  color: #6b7280;
+}
+
+.inventory-meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.inventory-badge {
+  background: white;
+  border: 1px solid #dbe3f0;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.inventory-update {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.inventory-update input {
+  width: 160px;
+  padding: 11px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  outline: none;
+}
+
+.empty-text {
+  color: #6b7280;
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .admin-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .admin-page {
+    padding: 20px 14px;
+  }
+
+  .admin-card {
+    padding: 18px;
+  }
+
+  .inventory-top {
+    flex-direction: column;
+  }
+
+  .inventory-update input {
+    width: 100%;
+  }
+
+  .inventory-update .admin-btn {
+    width: 100%;
+  }
+}

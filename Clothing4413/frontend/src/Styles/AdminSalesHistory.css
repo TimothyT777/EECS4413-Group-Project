@@ -1,0 +1,153 @@
+.admin-sales-page {
+  min-height: 100vh;
+  background: #f5f7fb;
+  padding: 32px 20px;
+}
+
+.admin-sales-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.admin-sales-header {
+  margin-bottom: 24px;
+}
+
+.admin-sales-header h1 {
+  margin: 0 0 8px;
+  font-size: 32px;
+}
+
+.admin-sales-header p {
+  margin: 0;
+  color: #555;
+}
+
+.admin-sales-card {
+  background: white;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
+}
+
+.admin-sales-card h2 {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.admin-sales-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.admin-sales-filters input {
+  padding: 12px;
+  border: 1px solid #d6dbe4;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.admin-sales-filter-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.admin-sales-filter-actions button {
+  padding: 12px 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #111827;
+  color: white;
+  font-weight: 600;
+}
+
+.admin-sales-filter-actions .secondary-btn {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.admin-sales-message {
+  margin-bottom: 18px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: #fff3cd;
+  color: #7a5d00;
+}
+
+.empty-text {
+  color: #666;
+}
+
+.sales-orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.sales-order-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 18px;
+  background: #fafafa;
+}
+
+.sales-order-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.sales-order-header h3 {
+  margin: 0 0 8px;
+}
+
+.sales-order-header p {
+  margin: 4px 0;
+}
+
+.sales-order-header-right {
+  text-align: right;
+}
+
+.sales-order-total {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.sales-order-items {
+  overflow-x: auto;
+}
+
+.sales-order-items table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.sales-order-items th,
+.sales-order-items td {
+  text-align: left;
+  padding: 12px 10px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.sales-order-items th {
+  background: #f3f4f6;
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .sales-order-header-right {
+    text-align: left;
+  }
+
+  .admin-sales-filter-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

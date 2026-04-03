@@ -68,7 +68,10 @@ public class CartItem {
     }
 
     public void setQuantity(int quantity) {
-        this.quantity = quantity;
+        if (this.product.getStock() < quantity) {
+            this.quantity = this.product.getStock(); // Set to max available stock if requested quantity exceeds stock
+        } else {
+            this.quantity = quantity;
+        }  
     }
-
 }
