@@ -66,6 +66,11 @@ function HomePage() {
 			return;
 		}
 
+		if (product.stock < 1) {
+			alert(`${product.name} is out of stock!`);
+			return;
+		}
+
 		try {
 			const response = await fetch("http://localhost:8080/api/cart/add", {
 				method: "POST",
