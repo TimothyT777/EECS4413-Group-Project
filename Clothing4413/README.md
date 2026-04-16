@@ -31,10 +31,15 @@ The following is required:
     - Run as Java Application
     - Then, open your command line interface (Start menu → Run → cmd)
     - Browse to the frontend folder using your command line interface (cd PROJECT_LOCATION/Clothing4413/frontend)
-    - Start the react server in your command line interface using command: "npm install" then "npm start"
+    - Install react dependencies by first doing "npm install", wait for the download to finish, and then doing "npm install react-router-dom"
+    - Start the react server in your command line interface using command: "npm start"
 
 4. **Access in browser**
     - [http://localhost:3000](http://localhost:3000)
+  
+5. **Acessing Users**
+    -To access Customer features either register a new customer and log in with those credentials, or login with email: John@example.com password: customer123
+    -To access Admin features, login with email: Jane@admin.com password: admin123
 
 ## Authors
 - Timothy Tolstinev
