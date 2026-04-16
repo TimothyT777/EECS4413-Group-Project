@@ -22,8 +22,10 @@ import com.example.clothing4413.dto.ProductResponse;
 import com.example.clothing4413.model.Administrator;
 import com.example.clothing4413.model.Cart;
 import com.example.clothing4413.model.CartItem;
+import com.example.clothing4413.model.Product;
 import com.example.clothing4413.model.Users;
 import com.example.clothing4413.service.CartService;
+import com.example.clothing4413.service.ProductService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -32,9 +34,11 @@ import jakarta.servlet.http.HttpSession;
 public class CartController {
 
     private final CartService cartService;
+    private final ProductService productService;
 
-    public CartController(CartService cartService) {
+    public CartController(CartService cartService, ProductService productService) {
         this.cartService = cartService;
+        this.productService = productService;
     }
 
     @GetMapping("/{customerId}")
@@ -47,12 +51,13 @@ public class CartController {
     @PostMapping("/add")
     public ResponseEntity<CartResponse> addProduct(@RequestBody CartRequest request, HttpSession session) {
         verifyCustomerAccess(request.getCustomerId(), session);
-        Cart cart = cartService.addProductToCart(
-                request.getCustomerId(),
-                request.getProductId(),
-                request.getQuantity()
-        );
-        return ResponseEntity.ok(buildCartResponse(cart));
+        Product product = productService.findProductById(request.getProductId());
+        if (product.getStock() <= 0) { //Dont add if it is out of stock
+            return ResponseEntity.badRequest().body(null);
+        } else { //Otherwise add to cart as normal
+            Cart cart = cartService.addProductToCart(request.getCustomerId(), request.getProductId(), request.getQuantity());
+            return ResponseEntity.ok(buildCartResponse(cart));
+        }
     }
 
     @DeleteMapping("/remove")

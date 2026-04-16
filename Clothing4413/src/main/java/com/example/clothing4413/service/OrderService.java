@@ -18,6 +18,7 @@ import com.example.clothing4413.model.Order;
 import com.example.clothing4413.model.OrderItem;
 import com.example.clothing4413.model.Product;
 import com.example.clothing4413.model.Users;
+import com.example.clothing4413.repository.CartItemRepository;
 import com.example.clothing4413.repository.CartRepository;
 import com.example.clothing4413.repository.OrderRepository;
 import com.example.clothing4413.repository.ProductRepository;
@@ -34,19 +35,22 @@ public class OrderService {
     private final UserRepository userRepository;
     private final PaymentService paymentService;
     private final ProductRepository productRepository;
+    private final CartItemRepository cartItemRepository;
 
     public OrderService(
             OrderRepository orderRepository,
             CartRepository cartRepository,
             UserRepository userRepository,
             PaymentService paymentService,
-            ProductRepository productRepository
+            ProductRepository productRepository,
+            CartItemRepository cartItemRepository
     ) {
         this.orderRepository = orderRepository;
         this.cartRepository = cartRepository;
         this.userRepository = userRepository;
         this.paymentService = paymentService;
         this.productRepository = productRepository;
+        this.cartItemRepository = cartItemRepository;
     }
 
     // Returns a list of all orders from a customer
@@ -161,6 +165,8 @@ public class OrderService {
             }
             product.setStock(newStock);
             productRepository.saveAndFlush(product);
+
+            syncCartsAfterCheckout(product, newStock);
         }
 
         orderRepository.saveAndFlush(order);
@@ -184,5 +190,21 @@ public class OrderService {
         customer.setCardNumber(cardNumber);
         customer.setCardHolderName(cardHolderName);
         customer.setCardExpiry(cardExpiry);
+    }
+
+    private void syncCartsAfterCheckout(Product product, int newStock) {
+        List<CartItem> affectedCartItems = cartItemRepository.findByProduct(product);
+
+        for (CartItem cartItem : affectedCartItems) {
+            if (newStock == 0) {
+                //Remove item from all carts since the stock of the product is 0
+                cartItem.getCart().getItems().remove(cartItem);
+                cartItemRepository.delete(cartItem);
+            } else if (cartItem.getQuantity() > newStock) {
+                //The user has more of the product than is currently in stock in their cart, reduce the amount to match new stock
+                cartItem.setQuantity(newStock);
+                cartItemRepository.saveAndFlush(cartItem);
+            }
+        }
     }
 }

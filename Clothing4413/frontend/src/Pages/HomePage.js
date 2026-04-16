@@ -67,6 +67,8 @@ function HomePage() {
 			return;
 		}
 
+		if (product.stock < 1) {
+			alert(`${product.name} is out of stock!`);
 		if (isAdmin) {
 			alert("Administrators cannot add items to the cart.");
 			return;
