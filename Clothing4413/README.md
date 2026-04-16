@@ -38,8 +38,9 @@ The following is required:
     - [http://localhost:3000](http://localhost:3000)
   
 5. **Acessing Users**
-    -To access Customer features either register a new customer and log in with those credentials, or login with email: John@example.com password: customer123
-    -To access Admin features, login with email: Jane@admin.com password: admin123
+    - To access Customer features either register a new customer and log in with those credentials, or login with email: John@example.com password: customer123
+    - To access Admin features, log in with email: Jane@admin.com password: admin123
+    
 
 ## Authors
 - Timothy Tolstinev
