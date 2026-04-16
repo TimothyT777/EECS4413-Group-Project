@@ -28,7 +28,7 @@ public class ProductService {
         return productRepo.findProductById(id);
     }
 
-    public Product addProduct(String name, String description, double price, int quantity) {
+    public Product addProduct(String name, String description, double price, int quantity, String imageUrl) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Product name is required.");
         }
@@ -41,7 +41,13 @@ public class ProductService {
             throw new IllegalArgumentException("Quantity cannot be negative.");
         }
 
-        Product product = new Product(name, description, price, quantity);
+        if (imageUrl == null || imageUrl.isBlank()) {
+            throw new IllegalArgumentException("Product image is required.");
+        }
+
+        Product product = new Product(name.trim(), description == null ? "" : description.trim(), price, quantity);
+        product.setImage(imageUrl);
+
         return productRepo.save(product);
     }
 
