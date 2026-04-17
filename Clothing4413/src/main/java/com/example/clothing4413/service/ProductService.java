@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.example.clothing4413.model.Product;
+import com.example.clothing4413.model.ProductCategory;
 import com.example.clothing4413.repository.ProductRepository;
 
 @Service
@@ -28,7 +29,7 @@ public class ProductService {
         return productRepo.findProductById(id);
     }
 
-    public Product addProduct(String name, String description, double price, int quantity, String imageUrl) {
+    public Product addProduct(String name, String description, double price, int quantity, String brand, ProductCategory category, String imageUrl) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Product name is required.");
         }
@@ -41,11 +42,15 @@ public class ProductService {
             throw new IllegalArgumentException("Quantity cannot be negative.");
         }
 
+        if (brand == null || brand.isBlank()) {
+            throw new IllegalArgumentException("Product brand is required.");
+        }
+
         if (imageUrl == null || imageUrl.isBlank()) {
             throw new IllegalArgumentException("Product image is required.");
         }
 
-        Product product = new Product(name.trim(), description == null ? "" : description.trim(), price, quantity);
+        Product product = new Product(name.trim(), description == null ? "" : description.trim(), price, quantity, brand.trim(), category);
         product.setImage(imageUrl);
 
         return productRepo.save(product);

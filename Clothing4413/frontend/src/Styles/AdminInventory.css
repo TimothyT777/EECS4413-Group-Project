@@ -60,7 +60,7 @@
   gap: 12px;
 }
 
-.admin-form input {
+.admin-form input, select {
   width: 100%;
   padding: 13px 14px;
   border: 1px solid #d1d5db;

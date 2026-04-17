@@ -51,17 +51,18 @@ public class Product {
         this.description = description;
         this.price = price;
         this.stock = stock;
-        this.quantity = stock;
         this.brand = brand;
         this.category = category;
         this.image = image;
     }
 
-    public Product(String name, String description, double price, int stock) {
+    public Product(String name, String description, double price, int stock, String brand, ProductCategory category) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.stock = stock;
+        this.brand = brand;
+        this.category = category;
     }
 
     public Long getProduct_id() {
@@ -118,7 +119,6 @@ public class Product {
 
     public void setStock(int stock) {
         this.stock = stock;
-        this.quantity = stock;
     }
 
     public void setQuantity(int quantity) {

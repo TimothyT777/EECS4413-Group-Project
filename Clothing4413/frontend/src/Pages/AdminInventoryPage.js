@@ -14,10 +14,19 @@ function AdminInventoryPage() {
     description: "",
     price: "",
     quantity: "",
+    brand:"",
+    category: "",
     image: null
   });
 
   const [quantityUpdates, setQuantityUpdates] = useState({});
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    fetch("/api/categories")
+      .then((res) => res.json())
+      .then((data) => setCategories(data));
+}, []);
 
   const fetchProducts = async () => {
     try {
@@ -88,12 +97,19 @@ function AdminInventoryPage() {
       return;
     }
 
+    if (!newProduct.brand.trim()) {
+      setMessage("Product brand is required.");
+      return;
+    }
+
     try {
       const formData = new FormData();
       formData.append("name", newProduct.name.trim());
       formData.append("description", newProduct.description.trim());
       formData.append("price", parsedPrice);
       formData.append("quantity", parsedQuantity);
+      formData.append("brand", newProduct.brand.trim());
+      formData.append("category", newProduct.category);
       formData.append("image", newProduct.image);
 
       const response = await fetch(ADMIN_INVENTORY_URL, {
@@ -111,6 +127,8 @@ function AdminInventoryPage() {
           description: "",
           price: "",
           quantity: "",
+          brand: "",
+          category: "",
           image: null
         });
 
@@ -220,6 +238,29 @@ function AdminInventoryPage() {
               />
 
               <input
+                type="text"
+                name="brand"
+                placeholder="Brand"
+                value={newProduct.brand}
+                onChange={handleNewProductChange}
+              />
+
+              <select
+                name="category"
+                value={newProduct.category||""}
+                onChange={handleNewProductChange}
+              >
+                <option value="" disabled>
+                  Choose a category
+                </option>
+                {categories.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
+
+              <input
                 ref={fileInputRef}
                 type="file"
                 name="image"
@@ -262,6 +303,8 @@ function AdminInventoryPage() {
                       <div className="inventory-badge">
                         Quantity: {product.stock ?? product.quantity ?? 0}
                       </div>
+                      <div className="inventory-badge">Brand: {product.brand}</div>
+                      <div className="inventory-badge">Category: {product.category}</div>
                       <div className="inventory-badge">ID: {product.product_id}</div>
                     </div>
 

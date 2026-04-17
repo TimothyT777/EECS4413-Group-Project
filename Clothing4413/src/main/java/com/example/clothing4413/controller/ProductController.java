@@ -5,14 +5,6 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.example.clothing4413.dto.AddProductRequest;
 import org.springframework.http.MediaType;
@@ -23,6 +15,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.example.clothing4413.dto.UpdateInventoryRequest;
 import com.example.clothing4413.model.Product;
+import com.example.clothing4413.model.ProductCategory;
 import com.example.clothing4413.service.ImageStorageService;
 import com.example.clothing4413.service.ProductService;
 
@@ -51,6 +44,8 @@ public class ProductController {
             @RequestParam(required = false, defaultValue = "") String description,
             @RequestParam double price,
             @RequestParam int quantity,
+            @RequestParam String brand,
+            @RequestParam ProductCategory category,
             @RequestParam("image") MultipartFile image
     ) {
         String storedImagePath = imageStorageService.storeProductImage(image);
@@ -64,6 +59,8 @@ public class ProductController {
                 description,
                 price,
                 quantity,
+                brand,
+                category,
                 imageUrl
         );
 
