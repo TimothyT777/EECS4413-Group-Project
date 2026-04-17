@@ -247,10 +247,6 @@ function HomePage() {
 					</div>
 				</div>
 			)}
-			<div className="footer">
-				<p>&copy; {new Date().getFullYear()} 4413-Clothing. All rights reserved. Created for EECS4413M.</p>
-				<p>Timothy Tolstinev, Justin Oguntala, Eric Nguyen, Eiad Sayed Suliman</p>
-			</div>
 		</div>
 	);
 }
