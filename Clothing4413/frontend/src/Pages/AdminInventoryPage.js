@@ -21,6 +21,7 @@ function AdminInventoryPage() {
 
   const [quantityUpdates, setQuantityUpdates] = useState({});
   const [categories, setCategories] = useState([]);
+  const [productToDelete, setProductToDelete] = useState(null);
 
   useEffect(() => {
     fetch("/api/categories")
@@ -189,6 +190,28 @@ function AdminInventoryPage() {
     }
   };
 
+  const handleDelete = async (id) =>{
+
+    try{
+      const response = await fetch(`${ADMIN_INVENTORY_URL}/${id}`, {
+        method: "DELETE",
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage(`Deleted product: ${id}`);
+        fetchProducts();
+        setProductToDelete(null);
+      }else {
+        setMessage(data.message || "Failed to delete product.");
+      }
+
+    }catch (error){
+      setMessage("Failed to delete product.");
+    }
+  }
+
   return (
     <div className="admin-page">
       <div className="admin-container">
@@ -323,6 +346,11 @@ function AdminInventoryPage() {
                       >
                         Update Quantity
                       </button>
+                      <button className="delete-btn"
+                        onClick={() => setProductToDelete(product)}
+                      >
+                        Delete Product
+                      </button>
                     </div>
                   </div>
                 ))
@@ -331,6 +359,32 @@ function AdminInventoryPage() {
           </div>
         </div>
       </div>
+      {productToDelete && (
+      <div className="delete-modal" onClick={() => setProductToDelete(null)}>
+        <div className="inventory-item" onClick={(e) => e.stopPropagation()}>
+          
+          <h3>Delete Product</h3>
+          <p>Are you sure you want to delete <strong>{productToDelete.name}</strong>?</p>
+
+          <div className="inventory-update">
+            <button
+              className="admin-btn"
+              onClick={() => setProductToDelete(null)}
+            >
+              Cancel
+            </button>
+
+            <button
+              className="delete-btn"
+              onClick={() => handleDelete(productToDelete.product_id)}
+            >
+              Delete
+            </button>
+          </div>
+
+        </div>
+      </div>
+    )}
     </div>
   );
 }

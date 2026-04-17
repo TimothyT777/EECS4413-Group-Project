@@ -76,6 +76,12 @@ public class ProductController {
         return ResponseEntity.ok(product);
     }
 
+    @DeleteMapping("/admin/inventory/{id}")
+    public ResponseEntity<Long> deleteProduct(@PathVariable Long id){
+        productService.removeProductById(id);
+        return ResponseEntity.ok(id);
+    }
+
     @ExceptionHandler({ IllegalArgumentException.class, IllegalStateException.class })
     public ResponseEntity<Map<String, String>> handleRuntimeErrors(RuntimeException ex) {
         return ResponseEntity.badRequest().body(Map.of("message", ex.getMessage()));
