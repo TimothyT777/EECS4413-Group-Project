@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.clothing4413.model.Cart;
+import com.example.clothing4413.model.CartItem;
 import com.example.clothing4413.model.Customer;
 import com.example.clothing4413.model.Product;
 import com.example.clothing4413.model.Users;
@@ -61,10 +62,27 @@ public class CartService {
     public Cart addProductToCart(Long customerId, Long productId, int quantity) {
         Cart cart = getCartByCustomerId(customerId);
         Product product = productRepository.findProductById(productId);
+
         if (product == null) {
             throw new IllegalArgumentException("Product with id " + productId + " not found");
         }
-        cart.addProduct(product, quantity);
+
+        //If the item we are adding is already in the cart, get its quantity
+        int existingQty = 0;
+        for (CartItem item : cart.getItems()) {
+            if (item.getProduct().getProduct_id().equals(productId)) {
+                existingQty = item.getQuantity();
+                break;
+            }
+        }
+        
+        int allowedToAdd = product.getStock() - existingQty;
+        if (allowedToAdd <= 0) {
+            return cart; //Can't add any more of this product, return the cart as is
+        }
+        int finalQty = Math.min(quantity, allowedToAdd); //Add the quantity if able, otherwise just add as much as we can up to the stock limit
+
+        cart.addProduct(product, finalQty);
         return cartRepository.save(cart);
     }
 

@@ -48,8 +48,11 @@ public class UserService {
     }
 
     public Users getUserById(Long id) {
-        return userRepo.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found."));
+        Users user = userRepo.findUsersById(id);
+        if (user == null) {
+            throw new IllegalArgumentException("User not found.");
+        }
+        return user;
     }
 
     @Transactional
@@ -88,8 +91,10 @@ public class UserService {
 
     @Transactional
     public Users updateUser(Long id, UpdateUserRequest request) {
-        Users user = userRepo.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found."));
+        Users user = userRepo.findUsersById(id);
+        if (user == null) {
+            throw new IllegalArgumentException("User not found.");
+        }
 
         if (request.getName() != null && !request.getName().isBlank()) {
             user.setName(request.getName());

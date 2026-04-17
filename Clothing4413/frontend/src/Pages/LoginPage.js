@@ -5,7 +5,7 @@ import "../Styles/Auth.css";
 
 function LoginPage() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, guestCart, clearGuestCart } = useAuth();
 
   const [form, setForm] = useState({
     email: "",
@@ -43,9 +43,59 @@ function LoginPage() {
         email: data.email,
         userType: data.userType
       });
+
+      if (data.userType === "CUSTOMER" && guestCart.length > 0) {
+        await new Promise(res => setTimeout(res, 100));
+        await mergeGuestCart(data.id);
+      }
+
       navigate("/");
     } else {
       setMessage(data.message || "Login failed.");
+    }
+  };
+
+  const mergeGuestCart = async (customerId) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/cart/${customerId}`);
+      const cartData = await response.json();
+      const cartItems = cartData.items || [];
+
+      for (let i = 0; i < guestCart.length; i++) {
+        const item = guestCart[i];
+        try {
+          //Get the current quantity of the item in the user's cart
+          const existingItem = cartItems.find(
+            c => c.product.id === item.product.product_id
+          );
+
+          //Check that when adding the guest cart quantity to the existing quantity, it does not exceed stock
+          const existingQuantity = existingItem ? existingItem.quantity : 0;
+          const stock = item.product.stock;
+          const guestQuantity = item.quantity;
+
+          const remainingStock = stock - existingQuantity;
+          const quantityToAdd = remainingStock > 0 ? Math.min(guestQuantity, remainingStock) : 0;
+
+          if (quantityToAdd <= 0) continue;
+
+          await fetch("http://localhost:8080/api/cart/add", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({
+              customerId: customerId,
+              productId: item.product.product_id,
+              quantity: quantityToAdd
+            })
+          });
+        } catch (error) {
+          console.error("Error merging guest cart item:", error);
+        };
+      }
+      clearGuestCart();
+    } catch (error) {
+      console.error("Error merging guest cart:", error);
     }
   };
 

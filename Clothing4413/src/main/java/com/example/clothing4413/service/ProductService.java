@@ -56,8 +56,10 @@ public class ProductService {
             throw new IllegalArgumentException("Quantity cannot be negative.");
         }
 
-        Product product = productRepo.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Product not found."));
+        Product product = productRepo.findProductById(id);
+        if (product == null) {
+            throw new IllegalArgumentException("Product not found.");
+        }
 
         product.setStock(quantity);
         return productRepo.save(product);

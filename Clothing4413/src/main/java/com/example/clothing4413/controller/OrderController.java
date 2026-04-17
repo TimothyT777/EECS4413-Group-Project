@@ -37,6 +37,7 @@ public class OrderController {
         this.userRepository = userRepository;
     }
 
+    //Checkout and order
     @PostMapping("/checkout")
     public ResponseEntity<OrderResponse> checkout(@Valid @RequestBody CheckoutRequest request) {
         Order order = orderService.checkout(request);
@@ -58,7 +59,9 @@ public class OrderController {
         info.setCardHolderName(customer.getCardHolderName());
         info.setCardNumber(customer.getCardNumber());
         info.setCardExpiry(customer.getCardExpiry());
-        info.setHasSavedInfo(customer.getShippingAddress() != null); //This can be done with any of the billing fields. If the information is saved, then obviously the field is not null, and as such the customer clicked on saving the information
+
+        //This can be done with any of the billing fields. If the information is saved, then the field is not null, and as such the customer clicked on saving the information
+        info.setHasSavedInfo(customer.getShippingAddress() != null); 
         return ResponseEntity.ok(info);
     }
 
@@ -86,7 +89,7 @@ public class OrderController {
             itemResponses.add(itemResponse);
         }
 
-        //Build the full checked out order
+        //Build the full checked out order (id, list of items, time order created at)
         OrderResponse response = new OrderResponse();
         response.setId(order.getId());
         response.setItems(itemResponses);
@@ -96,7 +99,7 @@ public class OrderController {
 
     @GetMapping("/{customerId}")
     public ResponseEntity<List<OrderResponse>> getOrders(@PathVariable Long customerId) {
-        //Get all orders a customer has submit (or checked out)
+        //Get all orders a customer has submit/checked out
         List<Order> orders = orderService.getOrderByCustomerId(customerId);
 
         //Store these orders as OrderResponses for frontend

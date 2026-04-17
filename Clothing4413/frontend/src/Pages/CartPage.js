@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import "../Styles/CartPage.css";
 
 function CartPage() {
-	const { user } = useAuth(); // Access user from AuthContext
+	const { user, guestCart } = useAuth(); 
     const [cartItems, setCartItems] = useState([]); // State to hold cart items
     const [loading, setLoading] = useState(true); // Tracks if the items in the cart have beenn fetched
     const [total, setTotal] = useState(0); // Total price of items in the cart
@@ -99,9 +99,55 @@ function CartPage() {
 
     //Actual Cart page:
     if (!user) {
+        //If guest cart is empty
+        if (guestCart.length === 0) { 
+            return (
+                <div className="cart-page">
+                    <p className="cart-message">Your cart is empty.</p>
+                    <p className="cart-message">Please log in to checkout.</p>
+                </div>
+            );
+        }
+
+        //Otherwise
+        //Calculate guest cart total
+        let guestTotal = 0;
+        for (let i = 0; i < guestCart.length; i++) {
+            guestTotal += guestCart[i].product.price * guestCart[i].quantity;
+        }
+
+        //Show page
         return (
             <div className="cart-page">
-                <p className="cart-message">You must be logged in to view your cart.</p>
+            <h1 className="cart-title">Your Cart</h1>
+            <div className="cart-container">
+                <div className="cart-items">
+                    {guestCart.map((item) => (
+                        <div className="cart-card" key={item.product.product_id}>
+                            <img src={item.product.image} alt={item.product.name} className="cart-image"/>
+                            <div className="cart-info">
+                                <p className="cart-name">{item.product.name}</p>
+                                <p className="cart-brand">{item.product.brand}</p>
+                                <p className="cart-category">{item.product.category}</p>
+                                <p className="cart-description">{item.product.description}</p>
+                                <p className="cart-price">${item.product.price}</p>
+                            </div>
+                            <div className="cart-actions">
+                                <p className="cart-subtotal">Qty: {item.quantity}</p>
+                                <p className="cart-subtotal">Subtotal: ${(item.product.price * item.quantity).toFixed(2)}</p>
+                            </div>
+                        </div>
+                    ))}
+                    </div>
+                    <div className="cart-summary">
+                        <h2>Order Summary</h2>
+                        <p>Total Items: {guestCart.reduce((acc, item) => acc + item.quantity, 0)}</p>
+                        <p className="cart-total">Total: ${guestTotal.toFixed(2)}</p>
+                        <button className="cart-checkout" onClick={() => navigate("/login")}>
+                            Log in to Checkout
+                        </button>
+                    </div>
+                </div>
             </div>
         );
     }
