@@ -30,7 +30,7 @@ function ProtectedCustomerRoute({ children }) {
     return <div>Loading...</div>;
   }
 
-  const isCustomer = user?.userType === "CUSTOMER";
+  const isCustomer = user?.userType === "CUSTOMER" || !user;
   return isCustomer ? children : <Navigate to="/" replace />;
 }
 
