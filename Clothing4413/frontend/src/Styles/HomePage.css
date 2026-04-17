@@ -169,14 +169,14 @@ body {
   text-align: right;
   font-family: "Montserrat", sans-serif;
   font-size: 3.4vw;
-  top: 50%;
-  left: -100%;
+  top: 25vh;
+  left: -100vw;
   opacity: 0;
   transition: transform 1.5s ease-out, opacity 1.5s ease-out;
   z-index: 1;
 }
 .text-slide.active {
-  transform: translateX(333%);
+  transform: translateX(131vw);
   opacity: 1;
 }
 
