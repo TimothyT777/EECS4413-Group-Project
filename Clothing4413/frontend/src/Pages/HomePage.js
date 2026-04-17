@@ -69,47 +69,48 @@ function HomePage() {
 	const handleClose = () => setSelectedProduct(null);
 
 	//Handles adding an item to the cart, including guest cart
+	//Handles adding an item to the cart, including guest cart
 	const handleAddToCart = async (product) => {
 		if (!user) {
 			addToGuestCart(product);
 			alert(`${product.name} added to cart!`);
-        	handleClose();
+			handleClose();
 			return;
 		}
 
-		if (product.stock < 1) {
-			alert(`${product.name} is out of stock!`);
-		}
 		if (isAdmin) {
 			alert("Administrators cannot add items to the cart.");
 			return;
 		}
 
-		try {
-			const response = await fetch("http://localhost:8080/api/cart/add", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				credentials: "include",
-				body: JSON.stringify({
-					customerId: user.id,
-					productId: product.product_id,
-					quantity: 1
-				})
-			});
+		if (product.stock < 1) {
+			alert(`${product.name} is out of stock!`);
+		} else {
+			try {
+				const response = await fetch("http://localhost:8080/api/cart/add", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					credentials: "include",
+					body: JSON.stringify({
+						customerId: user.id,
+						productId: product.product_id,
+						quantity: 1
+					})
+				});
 
-			if (response.ok) {
-				alert(`${product.name} added to cart!`);
-				handleClose();
-			} else {
-				alert("Failed to add item to cart.");
+				if (response.ok) {
+					alert(`${product.name} added to cart!`);
+					handleClose();
+				} else {
+					alert("Failed to add item to cart.");
+				}
+			} catch (error) {
+				console.error("Error adding item to cart:", error);
+				alert("An error occurred. Please try again.");
 			}
-		} catch (error) {
-			console.error("Error adding item to cart:", error);
-			alert("An error occurred. Please try again.");
 		}
 	};
 
-	
 	useEffect(() => {
 		const background = document.querySelector('.background');
 		const messageText = document.querySelector('.message');
