@@ -45,8 +45,6 @@ public class Cart {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    //Dont need when the cart was checked out, do that with Order
-
     //Before cart is placed in table, set the current times
     @PrePersist
     protected void onCreate() {
