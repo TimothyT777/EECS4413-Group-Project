@@ -4,16 +4,25 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.example.clothing4413.model.CartItem;
+import com.example.clothing4413.model.OrderItem;
 import com.example.clothing4413.model.Product;
+import com.example.clothing4413.model.ProductCategory;
+import com.example.clothing4413.repository.CartItemRepository;
+import com.example.clothing4413.repository.OrderItemRepository;
 import com.example.clothing4413.repository.ProductRepository;
 
 @Service
 public class ProductService {
 
     private final ProductRepository productRepo;
+    private final CartItemRepository cartItemRepo;
+    private final OrderItemRepository orderItemRepo;
 
-    public ProductService(ProductRepository productRepo) {
+    public ProductService(ProductRepository productRepo, CartItemRepository cartItemRepo, OrderItemRepository orderItemRepo) {
         this.productRepo = productRepo;
+        this.cartItemRepo = cartItemRepo;
+        this.orderItemRepo = orderItemRepo;
     }
 
     public List<Product> getAllProducts() {
@@ -28,7 +37,7 @@ public class ProductService {
         return productRepo.findProductById(id);
     }
 
-    public Product addProduct(String name, String description, double price, int quantity) {
+    public Product addProduct(String name, String description, double price, int quantity, String brand, ProductCategory category, String imageUrl) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Product name is required.");
         }
@@ -41,7 +50,17 @@ public class ProductService {
             throw new IllegalArgumentException("Quantity cannot be negative.");
         }
 
-        Product product = new Product(name, description, price, quantity);
+        if (brand == null || brand.isBlank()) {
+            throw new IllegalArgumentException("Product brand is required.");
+        }
+
+        if (imageUrl == null || imageUrl.isBlank()) {
+            throw new IllegalArgumentException("Product image is required.");
+        }
+
+        Product product = new Product(name.trim(), description == null ? "" : description.trim(), price, quantity, brand.trim(), category);
+        product.setImage(imageUrl);
+
         return productRepo.save(product);
     }
 
@@ -64,6 +83,22 @@ public class ProductService {
     }
 
     public void removeProductById(Long id) {
+        Product product = productRepo.findProductById(id);
+        if (product == null) {
+            throw new IllegalArgumentException("Product not found.");
+        }
+
+        //Dont delete if product has been ordered before
+        List<OrderItem> orderItems = orderItemRepo.findByProduct(product);
+        if (!orderItems.isEmpty()) {
+            throw new IllegalStateException("Cannot delete product that has been ordered before.");
+        }
+
+        //Remove product that is being deleted from all carts
+        List<CartItem> cartItems = cartItemRepo.findByProduct(product);
+        cartItemRepo.deleteAll(cartItems);
+
+        //Remove product from product repository
         productRepo.deleteById(id);
     }
 

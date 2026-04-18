@@ -13,7 +13,3 @@ public class Administrator extends Users {
     }
 }
 
-/**
- * Currently a template, we will add features that seperate administator from customers
- * in the future if required.
- */

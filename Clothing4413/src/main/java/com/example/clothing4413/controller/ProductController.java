@@ -5,18 +5,18 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.example.clothing4413.dto.AddProductRequest;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
 import com.example.clothing4413.dto.UpdateInventoryRequest;
 import com.example.clothing4413.model.Product;
+import com.example.clothing4413.model.ProductCategory;
+import com.example.clothing4413.service.ImageStorageService;
 import com.example.clothing4413.service.ProductService;
 
 @RestController
@@ -24,9 +24,11 @@ import com.example.clothing4413.service.ProductService;
 public class ProductController {
 
     private final ProductService productService;
+    private final ImageStorageService imageStorageService;
 
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService, ImageStorageService imageStorageService) {
         this.productService = productService;
+        this.imageStorageService = imageStorageService;
     }
 
     //Return a list of all producrts in the db
@@ -36,13 +38,30 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
-    @PostMapping("/admin/inventory")
-    public ResponseEntity<Product> addProduct(@RequestBody AddProductRequest request) {
+    @PostMapping(value = "/admin/inventory", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Product> addProduct(
+            @RequestParam String name,
+            @RequestParam(required = false, defaultValue = "") String description,
+            @RequestParam double price,
+            @RequestParam int quantity,
+            @RequestParam String brand,
+            @RequestParam ProductCategory category,
+            @RequestParam("image") MultipartFile image
+    ) {
+        String storedImagePath = imageStorageService.storeProductImage(image);
+
+        String imageUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path(storedImagePath)
+                .toUriString();
+
         Product product = productService.addProduct(
-                request.getName(),
-                request.getDescription(),
-                request.getPrice(),
-                request.getQuantity()
+                name,
+                description,
+                price,
+                quantity,
+                brand,
+                category,
+                imageUrl
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
@@ -57,8 +76,14 @@ public class ProductController {
         return ResponseEntity.ok(product);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Map<String, String>> handleIllegalArgument(IllegalArgumentException ex) {
+    @DeleteMapping("/admin/inventory/{id}")
+    public ResponseEntity<Long> deleteProduct(@PathVariable Long id){
+        productService.removeProductById(id);
+        return ResponseEntity.ok(id);
+    }
+
+    @ExceptionHandler({ IllegalArgumentException.class, IllegalStateException.class })
+    public ResponseEntity<Map<String, String>> handleRuntimeErrors(RuntimeException ex) {
         return ResponseEntity.badRequest().body(Map.of("message", ex.getMessage()));
     }
 }

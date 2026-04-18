@@ -9,6 +9,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 @Entity
@@ -54,11 +56,13 @@ public class Product {
         this.image = image;
     }
 
-    public Product(String name, String description, double price, int stock) {
+    public Product(String name, String description, double price, int stock, String brand, ProductCategory category) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.stock = stock;
+        this.brand = brand;
+        this.category = category;
     }
 
     public Long getProduct_id() {

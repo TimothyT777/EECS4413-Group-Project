@@ -18,6 +18,7 @@ import com.example.clothing4413.repository.UserRepository;
  * Initializes database with default values
  * Initializes A customer, An admin, and 4 products.
  * If they already exist, it does not add them again.
+ * If there are already products, it does not seed products. If there are already users, it does not seed users.
  */
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -59,7 +60,7 @@ public class DataInitializer implements CommandLineRunner {
             userRepository.saveAndFlush(defaultCustomer);
             userRepository.saveAndFlush(defaultAdmin);
 
-            //Cart for default user
+            //Cart for default customer
             Cart defaultCustomerCart = new Cart(defaultCustomer);
             cartRepository.save(defaultCustomerCart);
             
@@ -73,10 +74,10 @@ public class DataInitializer implements CommandLineRunner {
     private void seedProducts() {
         if (productRepository.count() == 0) {
             //name, description, price, stock, brand, category, image
-            Product shirt1 = new Product("Shirt 1", "Description for shirt ONE here", 19.99, 5, "Gucci", ProductCategory.SHIRTS, "/img/shirt1.png");
-            Product shirt2 = new Product("Shirt 2", "Description for shirt TWO here", 23.99, 3, "Gucci", ProductCategory.SHIRTS, "/img/shirt2.png");
-            Product shirt3 = new Product("Shirt 3", "Description for shirt THREE here", 27.99, 1, "Nike", ProductCategory.SHIRTS, "/img/shirt3.png");
-            Product shirt4 = new Product("Shirt 4", "Description for shirt FOUR here", 12.99, 10, "Adidas", ProductCategory.SHIRTS, "/img/shirt4.png");
+            Product shirt1 = new Product("Blue Gucci Shirt", "A light blue Gucci Shirt", 19.99, 5, "Gucci", ProductCategory.SHIRTS, "/img/shirt1.png");
+            Product shirt2 = new Product("Navy Gucci Shirt", "A navy blue Gucci Shirt", 23.99, 3, "Gucci", ProductCategory.SHIRTS, "/img/shirt2.png");
+            Product shirt3 = new Product("Navy Nike Shirt", "A navy blue Nike Shirt", 27.99, 1, "Nike", ProductCategory.SHIRTS, "/img/shirt3.png");
+            Product shirt4 = new Product("Plaid Adidas Shirt", "A red/blue plaidd Adidas Shirt", 12.99, 10, "Adidas", ProductCategory.SHIRTS, "/img/shirt4.png");
 
             productRepository.saveAndFlush(shirt1);
             productRepository.saveAndFlush(shirt2);

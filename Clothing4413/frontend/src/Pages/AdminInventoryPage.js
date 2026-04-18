@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "../Styles/AdminInventory.css";
 
 const PRODUCTS_URL = "http://localhost:8080/api/products";
@@ -7,15 +7,27 @@ const ADMIN_INVENTORY_URL = "http://localhost:8080/api/products/admin/inventory"
 function AdminInventoryPage() {
   const [products, setProducts] = useState([]);
   const [message, setMessage] = useState("");
+  const fileInputRef = useRef(null);
 
   const [newProduct, setNewProduct] = useState({
     name: "",
     description: "",
     price: "",
-    quantity: ""
+    quantity: "",
+    brand: "",
+    category: "",
+    image: null
   });
 
   const [quantityUpdates, setQuantityUpdates] = useState({});
+  const [categories, setCategories] = useState([]);
+  const [productToDelete, setProductToDelete] = useState(null);
+
+  useEffect(() => {
+    fetch("http://localhost:8080/api/categories")
+      .then((res) => res.json())
+      .then((data) => setCategories(data));
+  }, []);
 
   const fetchProducts = async () => {
     try {
@@ -44,9 +56,19 @@ function AdminInventoryPage() {
   }, []);
 
   const handleNewProductChange = (e) => {
+    const { name, value, files } = e.target;
+
+    if (name === "image") {
+      setNewProduct({
+        ...newProduct,
+        image: files && files[0] ? files[0] : null
+      });
+      return;
+    }
+
     setNewProduct({
       ...newProduct,
-      [e.target.name]: e.target.value
+      [name]: value
     });
   };
 
@@ -71,19 +93,30 @@ function AdminInventoryPage() {
       return;
     }
 
+    if (!newProduct.image) {
+      setMessage("Please upload a product image.");
+      return;
+    }
+
+    if (!newProduct.brand.trim()) {
+      setMessage("Product brand is required.");
+      return;
+    }
+
     try {
+      const formData = new FormData();
+      formData.append("name", newProduct.name.trim());
+      formData.append("description", newProduct.description.trim());
+      formData.append("price", parsedPrice);
+      formData.append("quantity", parsedQuantity);
+      formData.append("brand", newProduct.brand.trim());
+      formData.append("category", newProduct.category);
+      formData.append("image", newProduct.image);
+
       const response = await fetch(ADMIN_INVENTORY_URL, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
         credentials: "include",
-        body: JSON.stringify({
-          name: newProduct.name.trim(),
-          description: newProduct.description.trim(),
-          price: parsedPrice,
-          quantity: parsedQuantity
-        })
+        body: formData
       });
 
       const data = await response.json();
@@ -94,8 +127,16 @@ function AdminInventoryPage() {
           name: "",
           description: "",
           price: "",
-          quantity: ""
+          quantity: "",
+          brand: "",
+          category: "",
+          image: null
         });
+
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+
         fetchProducts();
       } else {
         setMessage(data.message || "Failed to add product.");
@@ -149,6 +190,28 @@ function AdminInventoryPage() {
     }
   };
 
+  const handleDelete = async (id) => {
+
+    try {
+      const response = await fetch(`${ADMIN_INVENTORY_URL}/${id}`, {
+        method: "DELETE",
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage(`Deleted product: ${id}`);
+        fetchProducts();
+        setProductToDelete(null);
+      } else {
+        setMessage(data.message || "Failed to delete product.");
+      }
+
+    } catch (error) {
+      setMessage("Failed to delete product.");
+    }
+  }
+
   return (
     <div className="admin-page">
       <div className="admin-container">
@@ -163,7 +226,7 @@ function AdminInventoryPage() {
           <div className="admin-card">
             <h2>Add Product</h2>
 
-            <form className="admin-form" onSubmit={handleAddProduct}>
+            <form className="admin-form" onSubmit={handleAddProduct} encType="multipart/form-data">
               <input
                 type="text"
                 name="name"
@@ -197,6 +260,37 @@ function AdminInventoryPage() {
                 onChange={handleNewProductChange}
               />
 
+              <input
+                type="text"
+                name="brand"
+                placeholder="Brand"
+                value={newProduct.brand}
+                onChange={handleNewProductChange}
+              />
+
+              <select
+                name="category"
+                value={newProduct.category || ""}
+                onChange={handleNewProductChange}
+              >
+                <option value="" disabled>
+                  Choose a category
+                </option>
+                {categories.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                name="image"
+                accept="image/*"
+                onChange={handleNewProductChange}
+              />
+
               <button className="admin-btn" type="submit">
                 Add Product
               </button>
@@ -213,9 +307,17 @@ function AdminInventoryPage() {
                 products.map((product) => (
                   <div key={product.product_id} className="inventory-item">
                     <div className="inventory-top">
-                      <div>
-                        <h3>{product.name}</h3>
-                        <p className="inventory-description">{product.description}</p>
+                      <div className="inventory-product-info">
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="inventory-image"
+                        />
+
+                        <div>
+                          <h3>{product.name}</h3>
+                          <p className="inventory-description">{product.description}</p>
+                        </div>
                       </div>
                     </div>
 
@@ -224,6 +326,8 @@ function AdminInventoryPage() {
                       <div className="inventory-badge">
                         Quantity: {product.stock ?? product.quantity ?? 0}
                       </div>
+                      <div className="inventory-badge">Brand: {product.brand}</div>
+                      <div className="inventory-badge">Category: {product.category}</div>
                       <div className="inventory-badge">ID: {product.product_id}</div>
                     </div>
 
@@ -242,6 +346,11 @@ function AdminInventoryPage() {
                       >
                         Update Quantity
                       </button>
+                      <button className="delete-btn"
+                        onClick={() => setProductToDelete(product)}
+                      >
+                        Delete Product
+                      </button>
                     </div>
                   </div>
                 ))
@@ -250,6 +359,32 @@ function AdminInventoryPage() {
           </div>
         </div>
       </div>
+      {productToDelete && (
+        <div className="delete-modal" onClick={() => setProductToDelete(null)}>
+          <div className="inventory-item" onClick={(e) => e.stopPropagation()}>
+
+            <h3>Delete Product</h3>
+            <p>Are you sure you want to delete <strong>{productToDelete.name}</strong>?</p>
+
+            <div className="inventory-update">
+              <button
+                className="admin-btn"
+                onClick={() => setProductToDelete(null)}
+              >
+                Cancel
+              </button>
+
+              <button
+                className="delete-btn"
+                onClick={() => handleDelete(productToDelete.product_id)}
+              >
+                Delete
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
     </div>
   );
 }
