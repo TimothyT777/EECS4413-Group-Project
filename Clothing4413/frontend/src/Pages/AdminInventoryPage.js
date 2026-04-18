@@ -14,7 +14,7 @@ function AdminInventoryPage() {
     description: "",
     price: "",
     quantity: "",
-    brand: "",
+    brand:"",
     category: "",
     image: null
   });
@@ -24,10 +24,10 @@ function AdminInventoryPage() {
   const [productToDelete, setProductToDelete] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/categories")
+    fetch("/api/categories")
       .then((res) => res.json())
       .then((data) => setCategories(data));
-  }, []);
+}, []);
 
   const fetchProducts = async () => {
     try {
@@ -190,9 +190,9 @@ function AdminInventoryPage() {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id) =>{
 
-    try {
+    try{
       const response = await fetch(`${ADMIN_INVENTORY_URL}/${id}`, {
         method: "DELETE",
       });
@@ -203,11 +203,11 @@ function AdminInventoryPage() {
         setMessage(`Deleted product: ${id}`);
         fetchProducts();
         setProductToDelete(null);
-      } else {
+      }else {
         setMessage(data.message || "Failed to delete product.");
       }
 
-    } catch (error) {
+    }catch (error){
       setMessage("Failed to delete product.");
     }
   }
@@ -270,7 +270,7 @@ function AdminInventoryPage() {
 
               <select
                 name="category"
-                value={newProduct.category || ""}
+                value={newProduct.category||""}
                 onChange={handleNewProductChange}
               >
                 <option value="" disabled>
@@ -360,31 +360,31 @@ function AdminInventoryPage() {
         </div>
       </div>
       {productToDelete && (
-        <div className="delete-modal" onClick={() => setProductToDelete(null)}>
-          <div className="inventory-item" onClick={(e) => e.stopPropagation()}>
+      <div className="delete-modal" onClick={() => setProductToDelete(null)}>
+        <div className="inventory-item" onClick={(e) => e.stopPropagation()}>
+          
+          <h3>Delete Product</h3>
+          <p>Are you sure you want to delete <strong>{productToDelete.name}</strong>?</p>
 
-            <h3>Delete Product</h3>
-            <p>Are you sure you want to delete <strong>{productToDelete.name}</strong>?</p>
+          <div className="inventory-update">
+            <button
+              className="admin-btn"
+              onClick={() => setProductToDelete(null)}
+            >
+              Cancel
+            </button>
 
-            <div className="inventory-update">
-              <button
-                className="admin-btn"
-                onClick={() => setProductToDelete(null)}
-              >
-                Cancel
-              </button>
-
-              <button
-                className="delete-btn"
-                onClick={() => handleDelete(productToDelete.product_id)}
-              >
-                Delete
-              </button>
-            </div>
-
+            <button
+              className="delete-btn"
+              onClick={() => handleDelete(productToDelete.product_id)}
+            >
+              Delete
+            </button>
           </div>
+
         </div>
-      )}
+      </div>
+    )}
     </div>
   );
 }
