@@ -34,7 +34,7 @@ To run the project, you do not need to run the backend code, docker will do that
 
    cd PROJECT_LOCATION/Clothing4413/frontend
 
-   Install these dependencies before you start the project (Only for the first time running it)
+   Install react dependencies before you start the project by running these two commands one after the other (Only for the first time running the project)
 
    npm install
    
