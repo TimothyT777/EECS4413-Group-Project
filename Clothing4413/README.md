@@ -9,7 +9,7 @@ The following is required:
 
 ## Steps to Build and Run
 
-1. Clone the repository
+### 1. Clone the repository
    
     ```bash
     git clone https://github.com/TimothyT777/EECS4413-Group-Project.git 
@@ -17,7 +17,7 @@ The following is required:
     ```
     To run the project, you do not need to run the backend code, docker will do that. However for ease of access, cloning the repository gives you an easy way to navigate to the docker-compose.yml and frontend folder.
     
-3. Start the backend through docker
+### 3. Start the backend through docker
    
     Make sure Docker Desktop is running, then in your terminal navigate to the Clothing4413 folder (where docker-compose.yml is) and run:
 
