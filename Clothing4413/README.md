@@ -37,6 +37,7 @@ To run the project, you do not need to run the backend code, docker will do that
    Install these dependencies before you start the project (Only for the first time running it)
 
    npm install
+   
    npm install react-router-dom
 
    After the installation finishes, start the React Server using:
